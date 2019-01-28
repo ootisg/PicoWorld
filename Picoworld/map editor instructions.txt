@@ -1,0 +1,1 @@
+Use ctrl+o to open a map
