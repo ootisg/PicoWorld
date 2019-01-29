@@ -70,7 +70,7 @@ public class Sprite {
 		imageArray = new BufferedImage[(int) (Math.floor (sheetHeight / height) * Math.floor (sheetWidth / width))];
 		for (int i = 0; i < Math.floor (sheetHeight / height); i ++) {
 			for (int c = 0; c < Math.floor (sheetWidth / width); c ++) {
-				imageArray [i * width + c] = spritesheet.getImage ().getSubimage (c * width, i * height, width, height);
+				imageArray [i * (sheetWidth / width) + c] = spritesheet.getImage ().getSubimage (c * width, i * height, width, height);
 			}
 		}
 		this.width = width;

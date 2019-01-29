@@ -5,5 +5,7 @@ public class GoldSword extends WeaponItem {
 		super ();
 		setProperty ("displayName", "Gold Sword");
 		setProperty ("attack", "10");
+		setProperty ("maxHealth", "null");
+		setProperty ("health", "null");
 	}
 }

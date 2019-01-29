@@ -30,12 +30,30 @@ public class CraftingMenu extends MappedUi {
 	public void instantiateRecipes () {
 		CraftingRecipe recipe;
 		
+		/*
+		TEST RECIPES
 		recipe = new CraftingRecipe (new GoldSword ());
 		recipe.addIngredient (new Apple ());
 		recipes.add (recipe);
 		
 		recipe = new CraftingRecipe (new Apple ());
 		recipe.addIngredient (new GoldSword ());
+		recipes.add (recipe);*/
+		
+		recipe = new CraftingRecipe (new GoldSword ());
+		recipe.addIngredient (new GoldBar ());
+		recipe.addIngredient (new WoodPlanks ());
+		recipes.add (recipe);
+		
+		recipe = new CraftingRecipe (new SilverSword ());
+		recipe.addIngredient (new SilverBar ());
+		recipe.addIngredient (new WoodPlanks ());
+		recipes.add (recipe);
+		
+		recipe = new CraftingRecipe (new MythrilSword ());
+		recipe.addIngredient (new MythrilBar ());
+		recipe.addIngredient (new SilverBar ());
+		recipe.addIngredient (new WoodPlanks ());
 		recipes.add (recipe);
 	}
 	public ArrayList<CraftingRecipe> getWorkingRecipes () {
@@ -62,9 +80,27 @@ public class CraftingMenu extends MappedUi {
 	}
 	public void buildGui () {
 		workingRecipes = getWorkingRecipes ();
-		setMap (buildTileMap (2, workingRecipes.size ()));
+		if (selectIndex > workingRecipes.size () - 1) {
+			selectIndex = workingRecipes.size () - 1;
+			if (selectIndex < 0) {
+				selectIndex = 0;
+			}
+		}
+		if (workingRecipes.size () == 0) {
+			setMap (buildTileMap (5, 2));
+			return;
+		}
+		int size = workingRecipes.size () + 1;
+		if (size < 2) {
+			size = 2;
+		}
+		int tileWidth = (int)Math.ceil ((((double)(20 + 8 * getLongestResultName (workingRecipes).length ())) / 16));
+		if (tileWidth < 5) {
+			tileWidth = 5;
+		}
+		setMap (buildTileMap (tileWidth, size));
 	}
-	public int[][] buildTileMap (int width, int height) {
+	public static int[][] buildTileMap (int width, int height) {
 		if (width < 2 || height < 2) {
 			return null;
 		}
@@ -96,21 +132,32 @@ public class CraftingMenu extends MappedUi {
 			setHidden (true);
 			return;
 		}
+		drawText ("CRAFTING", 2, 4);
 		for (int i = 0; i < workingRecipes.size (); i ++) {
-			workingRecipes.get (i).getResult ().getIcon ().draw ((int)this.getX (), (int)this.getY () + i * 16);
+			workingRecipes.get (i).getResult ().getIcon ().draw ((int)this.getX (), (int)this.getY () + i * 16 + 16);
+			drawText (getDisplayName (workingRecipes.get (i).getResult ()).toUpperCase (), 18, i * 16 + 20);
 		}
-		sprites.itemBorder.draw ((int)this.getX (), (int)this.getY () + selectIndex * 16);
-		//TODO adaptave sizing
-		int tileHeight = workingRecipes.get (selectIndex).getIngredients ().size ();
-		if (tileHeight < 2) {
-			tileHeight = 2;
-		}
-		ingredientsWindow.setMap (buildTileMap (2, tileHeight));
-		ingredientsWindow.setX (48);
-		ingredientsWindow.setY (96);
-		ingredientsWindow.draw ();
-		for (int i = 0; i < workingRecipes.get (selectIndex).getIngredients ().size (); i ++) {
-			workingRecipes.get (selectIndex).getIngredients ().get (i).getIcon ().draw ((int)ingredientsWindow.getX (), (int)ingredientsWindow.getY ());
+		if (workingRecipes.size () > 0) {
+			sprites.itemBorder.draw ((int)this.getX (), (int)this.getY () + selectIndex * 16 + 16);
+			//TODO adaptave sizing
+			int tileHeight = workingRecipes.get (selectIndex).getIngredients ().size () + 1;
+			if (tileHeight < 2) {
+				tileHeight = 2;
+			}
+			int resultWidth = (int)Math.ceil ((((double)(20 + 8 * getLongestResultName (workingRecipes).length ())) / 16));
+			int ingredientWidth = (int)Math.ceil ((((double)(20 + 8 * getLongestIngredientName (workingRecipes.get (selectIndex)).length ())) / 16));
+			if (ingredientWidth < 6) {
+				ingredientWidth = 6;
+			}
+			ingredientsWindow.setMap (buildTileMap (ingredientWidth, tileHeight));
+			ingredientsWindow.setX (resultWidth * 16 + 16);
+			ingredientsWindow.setY (96);
+			ingredientsWindow.draw ();
+			ingredientsWindow.drawText ("INGREDIENTS", 2, 4);
+			for (int i = 0; i < workingRecipes.get (selectIndex).getIngredients ().size (); i ++) {
+				workingRecipes.get (selectIndex).getIngredients ().get (i).getIcon ().draw ((int)ingredientsWindow.getX (), (int)ingredientsWindow.getY () + i * 16 + 16);
+				ingredientsWindow.drawText (getDisplayName (workingRecipes.get (selectIndex).getIngredients ().get (i)).toUpperCase (), 18, i * 16 + 20);
+			}
 		}
 	}
 	@Override
@@ -140,5 +187,33 @@ public class CraftingMenu extends MappedUi {
 			inventory.get (0).addItem (workingRecipes.get (selectIndex).getResult ());
 			buildGui ();
 		}
+	}
+	private String getLongestResultName (ArrayList<CraftingRecipe> recipeList) {
+		int longestName = 0;
+		int longestIndex = 0;
+		for (int i = 0; i < recipeList.size (); i ++) {
+			if (getDisplayName (recipeList.get (i).getResult ()).length () > longestName) {
+				longestName = getDisplayName (recipeList.get (i).getResult ()).length ();
+				longestIndex = i;
+			}
+		}
+		return recipeList.get (longestIndex).getResult ().getName ();
+	}
+	private String getLongestIngredientName (CraftingRecipe workingRecipe) {
+		int longestName = 0;
+		int longestIndex = 0;
+		for (int i = 0; i < workingRecipe.getIngredients ().size (); i ++) {
+			if (getDisplayName (workingRecipe.getIngredients ().get (i)).length () > longestName) {
+				longestName = getDisplayName (workingRecipe.getIngredients ().get (i)).length ();
+				longestIndex = i;
+			}
+		}
+		return workingRecipe.getIngredients ().get (longestIndex).getName ();
+	}
+	private String getDisplayName (GameItem item) {
+		if (!item.getProperty ("displayName").equals ("")) {
+			return (item.getProperty ("displayName"));
+		}
+		return item.getName ();
 	}
 }

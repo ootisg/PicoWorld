@@ -10,6 +10,7 @@ import resources.Spritesheet;
 public class ItemMenu extends GuiComponent implements ItemContainer {
 	private GameItem[][] items;
 	private Sprite[] pageIcons;
+	private Sprite itemHealth;
 	public static final int selectionHeight = 4;
 	public static final int selectionWidth = 6;
 	public static final int numPages = 5;
@@ -26,13 +27,11 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		pageIcons [2] = new Sprite ("resources/sprites/consumable_icon.png");
 		pageIcons [3] = new Sprite ("resources/sprites/material_icon.png");
 		pageIcons [4] = new Sprite ("resources/sprites/spell_icon.png");
+		itemHealth = new Sprite (new Spritesheet ("resources/sprites/itemhealth.png"), 16, 1);
 		selectIndex = 4;
 		pageIndex = 0;
 		setPriority (-2);
-		statWindow = new MappedUi (new Spritesheet ("resources/sprites/gui_background.png"), new int[][] {
-			{5, 1, 8},
-			{6, 3, 7}
-		});
+		statWindow = new MappedUi (new Spritesheet ("resources/sprites/gui_background.png"), new int[0][0]);
 		statWindow.setX (x + 128);
 		statWindow.setY (y);
 		statWindow.setPriority (-2);
@@ -122,6 +121,11 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 	public void renderElements () {
 		for (int i = 0; i < items [0].length; i ++) {
 			if (items [pageIndex][i] != null) {
+				if (pageIndex == GameItem.getValue (ItemType.WEAPON)) {
+					if (!items [pageIndex][i].getProperty ("maxHealth").equals ("null")) {
+						itemHealth.draw ((int)getX () + (1 + i / selectionHeight) * 16, (int)getY () + (1 + i % selectionHeight) * 16 + 14, (int)(Math.ceil (Double.parseDouble (items [pageIndex][i].getProperty ("health")) / Double.parseDouble (items [pageIndex][i].getProperty ("maxHealth")) * 14)) - 1);
+					}
+				}
 				items [pageIndex][i].getIcon ().draw ((int)getX () + (1 + i / selectionHeight) * 16, (int)getY () + (1 + i % selectionHeight) * 16);
 			}
 		}
@@ -142,10 +146,22 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 			drawText (itemName.toUpperCase (), 18, 4);
 		}
 		if (pageIndex == GameItem.getValue (ItemType.WEAPON) && items [pageIndex][selectIndex] != null) {
+			String healthText = items [pageIndex][selectIndex].getProperty ("health") + "/" + items [pageIndex][selectIndex].getProperty ("maxHealth");
+			if (items [pageIndex][selectIndex].getProperty ("health").equals ("null")) {
+				statWindow.setMap (CraftingMenu.buildTileMap (3, 2));
+			} else {
+				int statWidth = ((int)Math.ceil (((double)(2 + healthText.length () * 8) / 16)));
+				if (statWidth < 3) {
+					statWidth = 3;
+				}
+				statWindow.setMap (CraftingMenu.buildTileMap (statWidth, 4));
+			}
 			statWindow.draw ();
-			if (items [pageIndex][selectIndex] != null) {
 			statWindow.drawText ("ATK:", 2, 6);
 			statWindow.drawText (items [pageIndex][selectIndex].getProperty ("attack"), 2, 16);
+			if (!items [pageIndex][selectIndex].getProperty ("health").equals ("null")) {
+				statWindow.drawText ("DRB:", 2, 36);
+				statWindow.drawText (healthText, 2, 46);
 			}
 		}
 	}
