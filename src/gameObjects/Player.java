@@ -3,14 +3,17 @@ package gameObjects;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 
+import items.GameItem;
 import main.GameObject;
 import main.MainLoop;
 import resources.Sprite;
+import resources.Spritesheet;
 
 public class Player extends GameObject {
 	double health = 0;
 	double maxHealth = 0;
 	int direction = 0;
+	int attackDamage = 0;
 	double speed = 3;
 	int animation;
 	int animationFrame;
@@ -23,10 +26,10 @@ public class Player extends GameObject {
 	Color particleColor;
 	Sprite armSprite;
 	Sword swordObject;
-	public Player (int x, int y) {
-		this.declare (x, y);
-		this.setSprite (sprites.playerIdle);
-		this.armSprite = sprites.playerArmsIdle;
+	Sprite[] swordSprites;
+	public Player () {
+		this.setSprite (getSprites ().playerIdle);
+		this.armSprite = getSprites ().playerArmsIdle;
 		this.getAnimationHandler ().setAnimationSpeed (0);
 		this.createHitbox (0, 0, 16, 16);
 		this.animation = 0;
@@ -41,56 +44,54 @@ public class Player extends GameObject {
 				if (keyCheck ('W')) {
 					direction = DIRECTION_UP;
 					setY (getY () - speed);
-					if (room.isColliding (this.getHitbox ())) {
+					if (getRoom ().isColliding (this.getHitbox ())) {
 						//this.backstepY ();
 					}
 				}
 				if (keyCheck ('A')) {
 					direction = DIRECTION_LEFT;
 					setX (getX () - speed);
-					if (room.isColliding (this.getHitbox ())) {
+					if (getRoom ().isColliding (this.getHitbox ())) {
 						//this.backstepX ();
 					}
 				}
 				if (keyCheck ('S')) {
 					direction = DIRECTION_DOWN;
 					setY (getY () + speed);
-					if (room.isColliding (this.getHitbox ())) {
+					if (getRoom ().isColliding (this.getHitbox ())) {
 						//this.backstepY ();
 					}
 				}
 				if (keyCheck ('D')) {
 					direction = DIRECTION_RIGHT;
 					setX (getX () + speed);
-					if (room.isColliding (this.getHitbox ())) {
+					if (getRoom ().isColliding (this.getHitbox ())) {
 						//this.backstepX ();
 					}
 				}
 			}
 			if (keyCheck ('W') || keyCheck ('A') || keyCheck ('S') || keyCheck ('D')) {
-				if (this.getSprite () != sprites.playerWalkSprites [direction] && !swinging) {
-					this.setSprite (sprites.playerWalkSprites [direction]);
-					this.armSprite = sprites.playerArmSprites [direction];
+				if (this.getSprite () != getSprites ().playerWalkSprites [direction] && !swinging) {
+					this.setSprite (getSprites ().playerWalkSprites [direction]);
+					this.armSprite = getSprites ().playerArmSprites [direction];
 					this.getAnimationHandler ().setAnimationSpeed (.25);
 				}
 			} else if (!swinging) {
-				this.setSprite (sprites.playerIdle);
-				this.armSprite = sprites.playerArmsIdle;
+				this.setSprite (getSprites ().playerIdle);
+				this.armSprite = getSprites ().playerArmsIdle;
 				this.getAnimationHandler ().setFrame (direction);
 				this.getAnimationHandler ().setAnimationSpeed (0);
 			}
 			if (keyPressed (0x20) && !swinging) {
-				this.setSprite (sprites.playerIdle);
-				this.armSprite = sprites.swordArmSprites [direction];
-				this.getAnimationHandler ().setFrame (direction);
-				this.getAnimationHandler ().setAnimationSpeed (0);
-				animationFrame = 0;
-				swinging = true;
+				GameItem equippedWeapon = getGui ().getItemMenu ().getEquippedWeapon ();
+				if (equippedWeapon != null) {
+					equippedWeapon.use ();
+				}
 			}
 			double x = this.getX ();
 			double y = this.getY ();
-			int viewX = room.getViewX ();
-			int viewY = room.getViewY ();
+			int viewX = getRoom ().getViewX ();
+			int viewY = getRoom ().getViewY ();
 			int viewportWidth = MainLoop.getWindow ().getResolution ()[0];
 			int viewportHeight = MainLoop.getWindow ().getResolution ()[1];
 			double scrollSection = .25;
@@ -98,21 +99,21 @@ public class Player extends GameObject {
 			int rightBound = viewportWidth - leftBound;
 			int topBound = (int)(viewportHeight * scrollSection);
 			int bottomBound = viewportHeight - topBound;
-			if (y - viewY >= bottomBound && y - bottomBound < room.getHeight () * 16 - viewportHeight) {
+			if (y - viewY >= bottomBound && y - bottomBound < getRoom ().getHeight () * 16 - viewportHeight) {
 				viewY = (int) y - bottomBound;
-				room.setView (room.getViewX (), viewY);
+				getRoom ().setView (getRoom ().getViewX (), viewY);
 			}
 			if (y - viewY <= topBound && y - topBound > 0) {
 				viewY = (int) y - topBound;
-				room.setView (room.getViewX (), viewY);
+				getRoom ().setView (getRoom ().getViewX (), viewY);
 			}
-			if (x - viewX >= rightBound && x - rightBound < room.getWidth () * 16 - viewportWidth) {
+			if (x - viewX >= rightBound && x - rightBound < getRoom ().getWidth () * 16 - viewportWidth) {
 				viewX = (int) x - rightBound;
-				room.setView (viewX, room.getViewY ());
+				getRoom ().setView (viewX, getRoom ().getViewY ());
 			}
 			if (x - viewX <= leftBound && x - leftBound > 0) {
 				viewX = (int) x - leftBound;
-				room.setView (viewX, room.getViewY ());
+				getRoom ().setView (viewX, getRoom ().getViewY ());
 			}
 		}
 	}
@@ -120,26 +121,26 @@ public class Player extends GameObject {
 	public void draw () {
 		if (!swinging) {
 			this.armSprite.setFrame (this.getSprite ().getFrame ());
-			this.getAnimationHandler ().animate ((int)this.getX () - room.getViewX (), (int)this.getY () - room.getViewY (), false, false);
-			this.armSprite.draw ((int)this.getX () - room.getViewX (), (int)this.getY () - room.getViewY ());
+			this.getAnimationHandler ().animate ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY (), false, false);
+			this.armSprite.draw ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY ());
 		} else {
 			this.armSprite.setFrame (animationFrame / 3);
-			swordObject.setSprite (sprites.swordSprites [direction]);
+			swordObject.setSprite (swordSprites [direction]);
 			swordObject.getAnimationHandler ().setFrame (animationFrame / 3);
 			if (direction != DIRECTION_UP) {
-				this.getAnimationHandler ().animate ((int)this.getX () - room.getViewX (), (int)this.getY () - room.getViewY (), false, false);
-				this.armSprite.draw ((int)this.getX () - room.getViewX (), (int)this.getY () - room.getViewY ());
-				//sprites.swordSprites [direction].draw ((int)this.getX () + WEAPON_OFFSETS [direction * 2], (int)this.getY () + WEAPON_OFFSETS [direction * 2 + 1]);
+				this.getAnimationHandler ().animate ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY (), false, false);
+				this.armSprite.draw ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY ());
+				//swordSprites [direction].draw ((int)this.getX () + WEAPON_OFFSETS [direction * 2], (int)this.getY () + WEAPON_OFFSETS [direction * 2 + 1]);
 				swordObject.setX ((int)this.getX () + WEAPON_OFFSETS [direction * 2]);
 				swordObject.setY ((int)this.getY () + WEAPON_OFFSETS [direction * 2 + 1]);
-				swordObject.getAnimationHandler ().animate ((int)swordObject.getX () - room.getViewX (), (int)swordObject.getY () - room.getViewY (), false, false);
+				swordObject.getAnimationHandler ().animate ((int)swordObject.getX () - getRoom ().getViewX (), (int)swordObject.getY () - getRoom ().getViewY (), false, false);
 			} else {
-				//sprites.swordSprites [direction].draw ((int)this.getX () + WEAPON_OFFSETS [direction * 2], (int)this.getY () + WEAPON_OFFSETS [direction * 2 + 1]);
+				//swordSprites [direction].draw ((int)this.getX () + WEAPON_OFFSETS [direction * 2], (int)this.getY () + WEAPON_OFFSETS [direction * 2 + 1]);
 				swordObject.setX ((int)this.getX () + WEAPON_OFFSETS [direction * 2]);
 				swordObject.setY ((int)this.getY () + WEAPON_OFFSETS [direction * 2 + 1]);
-				swordObject.getAnimationHandler ().animate ((int)swordObject.getX () - room.getViewX (), (int)swordObject.getY () - room.getViewY (), false, false);
-				this.armSprite.draw ((int)this.getX () - room.getViewX (), (int)this.getY () - room.getViewY ());
-				this.getAnimationHandler ().animate ((int)this.getX () - room.getViewX (), (int)this.getY () - room.getViewY (), false, false);
+				swordObject.getAnimationHandler ().animate ((int)swordObject.getX () - getRoom ().getViewX (), (int)swordObject.getY () - getRoom ().getViewY (), false, false);
+				this.armSprite.draw ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY ());
+				this.getAnimationHandler ().animate ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY (), false, false);
 			}
 			animationFrame ++;
 			if (animationFrame == 9) {
@@ -148,6 +149,22 @@ public class Player extends GameObject {
 				swordObject.setPosition (-32, -32);
 			}
 		}
+	}
+	public void useSword (GameItem weapon) {
+		Spritesheet sheet = new Spritesheet ("resources/sprites/" + weapon.getName () + "Sheet.png");
+		swordSprites = new Sprite[] {
+				new Sprite (sheet, new int[] {0, 20, 40}, new int[] {0, 0, 0}, 20, 20),
+				new Sprite (sheet, new int[] {0, 20, 40}, new int[] {20, 20, 20}, 20, 20),
+				new Sprite (sheet, new int[] {0, 20, 40}, new int[] {40, 40, 40}, 20, 20),
+				new Sprite (sheet, new int[] {0, 20, 40}, new int[] {60, 60, 60}, 20, 20)
+		};
+		swordObject.setSwordUsed (weapon);
+		this.setSprite (getSprites ().playerIdle);
+		this.armSprite = getSprites ().swordArmSprites [direction];
+		this.getAnimationHandler ().setFrame (direction);
+		this.getAnimationHandler ().setAnimationSpeed (0);
+		animationFrame = 0;
+		swinging = true;
 	}
 	public void damage(int baseDamage) {
 		// TODO Auto-generated method stub

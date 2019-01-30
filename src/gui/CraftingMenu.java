@@ -71,7 +71,7 @@ public class CraftingMenu extends MappedUi {
 	public boolean recipeCraftable (CraftingRecipe recipe, ArrayList<ItemContainer> inventory) {
 		for (int i = 0; i < recipe.getIngredients ().size (); i ++) {
 			for (int j = 0; j < inventory.size (); j ++) {
-				if (!inventory.get (j).hasItem (recipe.getIngredients ().get (i))) {
+				if (!inventory.get (j).hasSimilar (recipe.getIngredients ().get (i))) {
 					return false;
 				}
 			}
@@ -138,7 +138,7 @@ public class CraftingMenu extends MappedUi {
 			drawText (getDisplayName (workingRecipes.get (i).getResult ()).toUpperCase (), 18, i * 16 + 20);
 		}
 		if (workingRecipes.size () > 0) {
-			sprites.itemBorder.draw ((int)this.getX (), (int)this.getY () + selectIndex * 16 + 16);
+			getSprites ().itemBorder.draw ((int)this.getX (), (int)this.getY () + selectIndex * 16 + 16);
 			//TODO adaptave sizing
 			int tileHeight = workingRecipes.get (selectIndex).getIngredients ().size () + 1;
 			if (tileHeight < 2) {
@@ -150,7 +150,7 @@ public class CraftingMenu extends MappedUi {
 				ingredientWidth = 6;
 			}
 			ingredientsWindow.setMap (buildTileMap (ingredientWidth, tileHeight));
-			ingredientsWindow.setX (resultWidth * 16 + 16);
+			ingredientsWindow.setX (resultWidth * 16 + 8);
 			ingredientsWindow.setY (96);
 			ingredientsWindow.draw ();
 			ingredientsWindow.drawText ("INGREDIENTS", 2, 4);
@@ -177,7 +177,7 @@ public class CraftingMenu extends MappedUi {
 		if (c == (char)KeyEvent.VK_SPACE) {
 			for (int i = 0; i < workingRecipes.get (selectIndex).getIngredients ().size (); i ++) {
 				for (int j = 0; j < inventory.size (); j ++) {
-					if (inventory.get (j).removeItem (workingRecipes.get (selectIndex).getIngredients ().get (i))) {
+					if (inventory.get (j).removeSimilar (workingRecipes.get (selectIndex).getIngredients ().get (i))) {
 						break;
 					}
 				}

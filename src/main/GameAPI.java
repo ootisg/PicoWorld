@@ -1,13 +1,15 @@
 package main;
 
+import gameObjects.Player;
 import gui.Gui;
 import map.Room;
 import resources.SpriteContainer;
 
 public abstract class GameAPI {
-	protected static Room room = new Room (); //Makes the static instance of the room object
-	protected static SpriteContainer sprites = MainLoop.getSprites (); //Makes the static instance of the sprite container object
-	protected static Gui gui = new Gui ();
+	private static final Room room = new Room (); //Makes the static instance of the room object
+	private static final SpriteContainer sprites = new SpriteContainer (); //Makes the static instance of the sprite container object
+	private static final Gui gui = new Gui ();
+	private static final Player player = new Player ();
 	public boolean keyCheck (int keyCode) {
 		//Returns true if the key with an ASCII code of keyCode is pressed down
 		return MainLoop.getWindow ().keyCheck (keyCode);
@@ -31,10 +33,6 @@ public abstract class GameAPI {
 	public boolean keyReleased (char key) {
 		//Returns true if the key with an ASCII code of keyCode was released this frame
 		return MainLoop.getWindow ().keyReleased ((int)key);
-	}
-	public SpriteContainer getSprites () {
-		//Returns the sprite container
-		return MainLoop.getSprites ();
 	}
 	public GameObject getObject (int x, int y) {
 		//Gets the object from the object matrix with the position (x, y)
@@ -62,5 +60,17 @@ public abstract class GameAPI {
 			return false;
 		}
 		return true;
+	}
+	public static Room getRoom () {
+		return room;
+	}
+	public static SpriteContainer getSprites () {
+		return sprites;
+	}
+	public static Gui getGui () {
+		return gui;
+	}
+	public static Player getPlayer () {
+		return player;
 	}
 }

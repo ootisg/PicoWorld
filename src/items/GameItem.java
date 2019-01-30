@@ -108,4 +108,16 @@ public abstract class GameItem {
 	protected void setIcon (Sprite icon) {
 		this.icon = icon;
 	}
+	public boolean use () {
+		return false;
+	}
+	@Override
+	public boolean equals (Object o) {
+		if (o.getClass ().getName ().equals (this.getClass ().getName ())) {
+			if (this.type == ((GameItem)o).type && this.name.equals (((GameItem)o).getName ()) && this.properties.equals (((GameItem)o).getProperties ())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

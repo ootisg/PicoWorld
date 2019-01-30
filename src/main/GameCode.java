@@ -14,12 +14,12 @@ public class GameCode extends GameAPI {
 		//Runs on initialization
 		//MainLoop.getWindow ().setResolution (480, 480);
 		try {
-			room.loadRoom ("resources/maps/gamemap.cmf");
+			getRoom ().loadRoom ("resources/maps/gamemap.cmf");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		new Player (256, 16);
+		getPlayer ().declare (256, 32);
 		new FrostElemental ().declare (32, 32);
 		new ItemDrop (new GoldSword ()).declare (128, 128);
 		new ItemDrop (new Apple ()).declare (128, 150);
@@ -44,7 +44,7 @@ public class GameCode extends GameAPI {
 		MainLoop.getWindow ().setSize (1024, 576);
 	}
 	public void gameLoop () {
-		room.frameEvent ();
+		getRoom ().frameEvent ();
 		//Runs once per frame
 	}
 }

@@ -9,7 +9,7 @@ public class SpriteContainer {
 	public Spritesheet playerArmSheet = new Spritesheet ("resources/sprites/arms_sheet.png");
 	public Spritesheet swordArmSheet = new Spritesheet ("resources/sprites/swordarmsheet.png");
 	public Spritesheet fireballSheet = new Spritesheet ("resources/sprites/fireball_sheet.png");
-	public Spritesheet swordSheet = new Spritesheet ("resources/sprites/swordsheet.png");
+	//public Spritesheet swordSheet = new Spritesheet ("resources/sprites/swordsheet.png");
 	public Spritesheet spellSheet = new Spritesheet ("resources/sprites/spell_sheet.png");
 	public Spritesheet textSheet = new Spritesheet ("resources/sprites/text.png");
 	//Sprites
@@ -33,12 +33,12 @@ public class SpriteContainer {
 			new Sprite (swordArmSheet, new int[] {0, 16, 32}, new int[] {32, 32, 32}, 16, 16),
 			new Sprite (swordArmSheet, new int[] {0, 16, 32}, new int[] {48, 48, 48}, 16, 16)
 	};
-	public Sprite[] swordSprites = new Sprite[] {
+	/*public Sprite[] swordSprites = new Sprite[] {
 			new Sprite (swordSheet, new int[] {0, 20, 40}, new int[] {0, 0, 0}, 20, 20),
 			new Sprite (swordSheet, new int[] {0, 20, 40}, new int[] {20, 20, 20}, 20, 20),
 			new Sprite (swordSheet, new int[] {0, 20, 40}, new int[] {40, 40, 40}, 20, 20),
 			new Sprite (swordSheet, new int[] {0, 20, 40}, new int[] {60, 60, 60}, 20, 20)
-	};
+	};*/
 	public Sprite[] fireballSprites = new Sprite[] {
 			new Sprite (fireballSheet, new int[] {0, 16, 32, 48}, new int[] {0, 0, 0, 0}, 16, 16),
 			new Sprite (fireballSheet, new int[] {0, 16, 32, 48}, new int[] {16, 16, 16, 16}, 16, 16)

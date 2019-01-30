@@ -2,12 +2,12 @@ package main;
 
 import java.awt.Toolkit;
 
+import gui.Gui;
 import resources.SpriteContainer;
 
 public class MainLoop {
 	//Main class
 	private static GameWindow gameWindow;
-	private static SpriteContainer sprites;
 	private static ObjectMatrix objectMatrix;
 	private static Console console;
 	private static long delay; //Used for loop timing
@@ -21,7 +21,6 @@ public class MainLoop {
 		delay = 0; //Used for loop timing
 		gameWindow = new GameWindow (); //Create the window
 		objectMatrix = new ObjectMatrix (); //Create the object matrix
-		sprites = new SpriteContainer (); //Create the sprite container
 		console = new Console (); //Create the dev console
 		GameCode gameCode = new GameCode (); //Initialize game code
 		gameCode.initialize (); //Note: runs before gameCode.gameLoop ()
@@ -63,9 +62,6 @@ public class MainLoop {
 	}
 	public static GameWindow getWindow () {
 		return gameWindow;
-	}
-	public static SpriteContainer getSprites () {
-		return sprites;
 	}
 	public static ObjectMatrix getObjectMatrix () {
 		return objectMatrix;

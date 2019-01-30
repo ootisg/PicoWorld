@@ -12,7 +12,7 @@ public class FrostElemental extends Enemy {
 	double densityCoefficient;
 	double particleSpeedCoefficient;
 	public FrostElemental () {
-		this.setSprite (sprites.frostElemental);
+		this.setSprite (getSprites ().frostElemental);
 		this.getAnimationHandler ().setAnimationSpeed (0);
 		this.createHitbox (0, 0, 16, 16);
 		this.particleColor = new Color (0xFF, 0xFF, 0xFF, 0x80);
@@ -35,6 +35,6 @@ public class FrostElemental extends Enemy {
 	@Override
 	public void draw () {
 		//this.setX(this.getX () + 2);
-		sprites.frostEyes.draw ((int)this.getX () - room.getViewX (), (int)this.getY () - room.getViewY ());
+		getSprites ().frostEyes.draw ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY ());
 	}
 }

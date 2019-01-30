@@ -10,11 +10,23 @@ public interface ItemContainer {
 	 */
 	boolean hasItem (GameItem item);
 	/**
+	 * Returns true if this object contains an item i for which item.equals (i) evaluates to true
+	 * @param item the item to search for
+	 * @return true if the item is found; false otherwise
+	 */
+	boolean hasSimilar (GameItem item);
+	/**
 	 * Returns the number of the given item this object contains
 	 * @param item the item to search for
 	 * @return the number of items found
 	 */
 	int numItems (GameItem item);
+	/**
+	 * Returns the number of items for which item.equals (i) evaluates to true contained by this object
+	 * @param item the item to search for
+	 * @return the number of items found
+	 */
+	int numSimilar (GameItem item);
 	/**
 	 * Adds the given item to this item container
 	 * @param item the item to add
@@ -27,6 +39,12 @@ public interface ItemContainer {
 	 * @return true if the item is removed successfully; false otherwise
 	 */
 	boolean removeItem (GameItem item);
+	/**
+	 * Removes the first occurance of a GameItem i, for which item.equals (i) evaluates to true, from this container
+	 * @param item the item to use when checking for similarity
+	 * @return true if the item is removed successfully; false otherwise
+	 */
+	boolean removeSimilar (GameItem item);
 	/**
 	 * Sets the item at the given index to the give item
 	 * @param index the index to set

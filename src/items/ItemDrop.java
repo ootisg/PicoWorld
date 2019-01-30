@@ -12,7 +12,7 @@ public class ItemDrop extends GameObject {
 	@Override
 	public void frameEvent () {
 		if (isColliding ("gameObjects.Player")) {
-			if (gui.getItemMenu ().addItem (item)) {
+			if (getGui ().getItemMenu ().addItem (item)) {
 				this.forget ();
 			}
 		}

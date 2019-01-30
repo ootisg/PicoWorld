@@ -17,8 +17,11 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 	private int selectIndex;
 	private int pageIndex;
 	private MappedUi statWindow;
+	
+	private int selectedWeapon;
+	
 	public ItemMenu (int x, int y) {
-		super (sprites.itemUi);
+		super (getSprites ().itemUi);
 		declare (x, y);
 		items = new GameItem[numPages][selectionWidth * selectionHeight];
 		pageIcons = new Sprite[numPages];
@@ -32,9 +35,11 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		pageIndex = 0;
 		setPriority (-2);
 		statWindow = new MappedUi (new Spritesheet ("resources/sprites/gui_background.png"), new int[0][0]);
-		statWindow.setX (x + 128);
-		statWindow.setY (y);
+		statWindow.setX (x + 120);
+		statWindow.setY (y + 8);
 		statWindow.setPriority (-2);
+		
+		selectedWeapon = -1;
 	}
 	public boolean addItem (GameItem item) {
 		for (int i = 0; i < items [GameItem.getValue (item.getType ())].length; i ++) {
@@ -47,6 +52,11 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 	}
 	@Override
 	public void keyEvent (char c) {
+		if (c == KeyEvent.VK_SPACE) {
+			if (pageIndex == GameItem.getValue (ItemType.WEAPON)) {
+				selectedWeapon = selectIndex;
+			}
+		}
 		if (keyCheck (KeyEvent.VK_SHIFT)) {
 			switch (c) {
 				case 'W':
@@ -113,6 +123,24 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 			}
 		}
 	}
+	public GameItem[][] getItems () {
+		return items;
+	}
+	public int getSelectedPageIndex () {
+		return pageIndex;
+	}
+	public int getSelectedItemIndex () {
+		return selectIndex;
+	}
+	public GameItem getEquippedWeapon () {
+		if (selectedWeapon == -1) {
+			return null;
+		}
+		return items [GameItem.getValue (ItemType.WEAPON)][selectedWeapon];
+	}
+	public void setItems (GameItem[][] items) {
+		this.items = items;
+	}
 	@Override
 	public void renderBackground () {
 		this.getSprite ().draw ((int)this.getX (), (int)this.getY ());
@@ -134,8 +162,11 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 				pageIcons [i].draw ((int)getX (), (int)getY () + i * 16);
 			}
 		}
-		sprites.selectedBorder.draw ((int)getX () + (1 + selectIndex / selectionHeight) * 16, (int)getY () + (1 + selectIndex % selectionHeight) * 16);
-		sprites.selectedBorder.draw ((int)getX (), (int)getY () + pageIndex * 16);
+		getSprites ().selectedBorder.draw ((int)getX () + (1 + selectIndex / selectionHeight) * 16, (int)getY () + (1 + selectIndex % selectionHeight) * 16);
+		getSprites ().selectedBorder.draw ((int)getX (), (int)getY () + pageIndex * 16);
+		if (pageIndex == GameItem.getValue (ItemType.WEAPON) && selectedWeapon != -1) {
+			drawText ("E", (1 + selectedWeapon / selectionHeight) * 16 + 4, (1 + selectedWeapon % selectionHeight) * 16 + 4);
+		}
 		if (items [pageIndex][selectIndex] != null) {
 			String itemName;
 			if (items [pageIndex][selectIndex].getProperty ("displayName").equals ("")) {
@@ -171,7 +202,21 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		for (int i = 0; i < items.length; i ++) {
 			for (int j = 0; j < items [0].length; j ++) {
 				if (items [i][j] != null) {
-					if (items [i][j].getName ().equals (item.getName ())) {
+					if (items [i][j] == item) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	@Override
+	public boolean hasSimilar (GameItem item) {
+		//TODO deep compare
+		for (int i = 0; i < items.length; i ++) {
+			for (int j = 0; j < items [0].length; j ++) {
+				if (items [i][j] != null) {
+					if (items [i][j].equals (item)) {
 						return true;
 					}
 				}
@@ -185,7 +230,21 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		for (int i = 0; i < items.length; i ++) {
 			for (int j = 0; j < items [0].length; j ++) {
 				if (items [i][j] != null) {
-					if (items [i][j].getName ().equals (item.getName ())) {
+					if (items [i][j] == item) {
+						count ++;
+					}
+				}
+			}
+		}
+		return count;
+	}
+	@Override
+	public int numSimilar (GameItem item) {
+		int count = 0;
+		for (int i = 0; i < items.length; i ++) {
+			for (int j = 0; j < items [0].length; j ++) {
+				if (items [i][j] != null) {
+					if (items [i][j].equals (item)) {
 						count ++;
 					}
 				}
@@ -195,15 +254,51 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 	}
 	@Override
 	public boolean removeItem (GameItem item) {
+		GameItem equipped = getEquippedWeapon ();
 		for (int i = 0; i < items.length; i ++) {
 			for (int j = 0; j < items [0].length; j ++) {
 				if (items [i][j] != null) {
-					if (items [i][j].getName ().equals (item.getName ())) {
+					if (items [i][j] == item) {
 						items [i][j] = null;
 						for (int k = j; k < items [i].length - 1; k ++) {
 							items [i][k] = items [i][k + 1];
 							if (k == items [i].length - 2) {
 								items [i][items [i].length - 1] = null;
+							}
+						}
+						selectedWeapon = -1;
+						for (int k = 0; k < items [0].length; k ++) {
+							if (items [GameItem.getValue (ItemType.WEAPON)][k] == equipped && equipped != null) {
+								selectedWeapon = k;
+								break;
+							}
+						}
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	@Override
+	public boolean removeSimilar (GameItem item) {
+		GameItem equipped = getEquippedWeapon ();
+		for (int i = 0; i < items.length; i ++) {
+			for (int j = 0; j < items [0].length; j ++) {
+				if (items [i][j] != null) {
+					if (items [i][j].equals (item)) {
+						items [i][j] = null;
+						for (int k = j; k < items [i].length - 1; k ++) {
+							items [i][k] = items [i][k + 1];
+							if (k == items [i].length - 2) {
+								items [i][items [i].length - 1] = null;
+							}
+						}
+						selectedWeapon = -1;
+						for (int k = 0; k < items [0].length; k ++) {
+							if (items [GameItem.getValue (ItemType.WEAPON)][k] == equipped && equipped != null) {
+								selectedWeapon = k;
+								break;
 							}
 						}
 						return true;

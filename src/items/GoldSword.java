@@ -1,5 +1,8 @@
 package items;
 
+import main.GameAPI;
+import resources.Sprite;
+
 public class GoldSword extends WeaponItem {
 	public GoldSword () {
 		super ();
@@ -7,5 +10,10 @@ public class GoldSword extends WeaponItem {
 		setProperty ("attack", "10");
 		setProperty ("maxHealth", "null");
 		setProperty ("health", "null");
+	}
+	@Override
+	public boolean use () {
+		GameAPI.getPlayer ().useSword (this);
+		return true;
 	}
 }

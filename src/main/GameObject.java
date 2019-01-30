@@ -352,10 +352,10 @@ public abstract class GameObject extends GameAPI implements Comparable {
 		//Draws the Sprite associated with this GameObject
 		if (sprite != null) {	
 			if (animationEnabled) {
-				animationHandler.animate ((int) x - room.getViewX (), (int) y - room.getViewY (), flipHorizontal, flipVertical);
+				animationHandler.animate ((int) x - getRoom ().getViewX (), (int) y - getRoom ().getViewY (), flipHorizontal, flipVertical);
 			} else {
 				sprite.setFrame (0);
-				sprite.draw ((int) x - room.getViewX (), (int) y - room.getViewY (), flipHorizontal, flipVertical);
+				sprite.draw ((int) x - getRoom ().getViewX (), (int) y - getRoom ().getViewY (), flipHorizontal, flipVertical);
 			}
 		}
 	}

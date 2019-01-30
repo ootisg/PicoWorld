@@ -11,7 +11,6 @@ public abstract class Enemy extends GameObject {
 	float knockbackX = 0;
 	float knockbackY = 0;
 	int knockbackTime = 0;
-	Player player = (Player) MainLoop.getObjectMatrix ().get ("gameObjects.Player", 0);
 	@Override
 	public void frameEvent () {
 		if (invul == 0) {
@@ -23,7 +22,7 @@ public abstract class Enemy extends GameObject {
 			this.deathEvent ();
 		}
 		enemyFrame ();
-		if (isColliding (player)) {
+		if (isColliding (getPlayer ())) {
 			attackEvent ();
 		}
 		if (invul > 0) {
@@ -40,13 +39,13 @@ public abstract class Enemy extends GameObject {
 		//System.out.println(this.knockbackTime);
 	}
 	public void attackEvent () {
-		player.damage (this.baseDamage);
+		getPlayer ().damage (this.baseDamage);
 	}
 	public void damageEvent () {
 		invul = invulTime;
 		this.knockbackTime = 3;
 		float knockbackMagnitude = 4.5f;
-		switch (player.direction) {
+		switch (getPlayer ().direction) {
 			case Player.DIRECTION_UP:
 				this.knockbackY = -knockbackMagnitude;
 				break;
