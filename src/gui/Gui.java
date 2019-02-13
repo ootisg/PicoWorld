@@ -23,6 +23,7 @@ public class Gui extends GameObject {
 		craftingMenu.declare (0, 96);
 		itemMenu.focus ();
 		craftingMenu.setHidden (true);
+		this.setPersistent (true);
 	}
 	public void frameEvent () {
 		pauseCooldown --;

@@ -14,7 +14,7 @@ public class GameCode extends GameAPI {
 		//Runs on initialization
 		//MainLoop.getWindow ().setResolution (480, 480);
 		try {
-			getRoom ().loadRoom ("resources/maps/gamemap.cmf");
+			getRoom ().loadRoom ("resources/maps/testmap.cmf");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

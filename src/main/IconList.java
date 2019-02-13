@@ -12,8 +12,8 @@ public class IconList extends GameAPI {
 	}
 	public static void render (Sprite[] icons, int x, int y, int spacing) {
 		for (int i = 0; i < icons.length; i ++) {
-			sprites.itemBorder.draw (x + i * sprites.itemBorder.getImageArray ()[0].getWidth (), y);
-			icons [i].draw (x + i * sprites.itemBorder.getImageArray ()[0].getWidth (), y);
+			getSprites ().itemBorder.draw (x + i * getSprites ().itemBorder.getImageArray ()[0].getWidth (), y);
+			icons [i].draw (x + i * getSprites ().itemBorder.getImageArray ()[0].getWidth (), y);
 		}
 	}
 }

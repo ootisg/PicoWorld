@@ -140,7 +140,7 @@ public class Console {
 		if (cmd.length == 2) {
 			if (cmd [0].equals ("-loadmap")) {
 				try {
-					GameAPI.room.loadRoom ("resources/maps/" + cmd [1]);
+					GameAPI.getRoom ().loadRoom ("resources/maps/" + cmd [1]);
 				} catch (FileNotFoundException e) {
 					text [currentLine] = "Error: file could not be found";
 				} finally {

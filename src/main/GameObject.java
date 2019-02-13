@@ -7,6 +7,7 @@ import resources.Sprite;
 
 public abstract class GameObject extends GameAPI implements Comparable {
 	protected int[] matrixLocation;
+	private Variant variant = new Variant ("");
 	private double x;
 	private double y;
 	private double xprevious;
@@ -23,6 +24,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	private boolean flipHorizontal = false;
 	private boolean flipVertical = false;
 	private boolean isDeclared = false;
+	private boolean persistent = false;
 	public void declare (double x, double y) {
 		//Adds this GameObject to the object matrix
 		matrixLocation = MainLoop.getObjectMatrix ().add (this);
@@ -53,7 +55,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	}
 	public boolean isInBounds (double x, double y) {
 		//Returns true if the given point is in bounds of the room
-		if (x >= 0 && x <= room.getWidth () * 16 && y >= 0 && y <= room.getHeight () * 16) {
+		if (x >= 0 && x <= getRoom ().getWidth () * 16 && y >= 0 && y <= getRoom ().getHeight () * 16) {
 			return true;
 		} else {
 			return false;
@@ -394,6 +396,15 @@ public abstract class GameObject extends GameAPI implements Comparable {
 		//Sets the vertical flip state of this GameObject
 		flipVertical = flip;
 	}
+	public void setVariant (Variant variant) {
+		this.variant = variant;
+	}
+	public void setVariantData (String variantData) {
+		variant.setVariantData (variantData);
+	}
+	public void setVariantAttribute (String variantAttribute, String value) {
+		variant.setAttribute (variantAttribute, value);
+	}
 	public boolean getFlipHorizontal () {
 		//Returns the horizontal filp state of this GameObject
 		return flipHorizontal;
@@ -407,6 +418,12 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	}
 	public boolean isHidden () {
 		return hidden;
+	}
+	public boolean isPersistent () {
+		return persistent;
+	}
+	public void setPersistent (boolean persistance) {
+		persistent = persistance;
 	}
 	public int getId () {
 		//Returns the numerical ID of this GameObject's type on the object matrix
@@ -425,6 +442,22 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	public Sprite getSprite () {
 		//Returns this object's Sprite
 		return this.sprite;
+	}
+	public Variant getVariant () {
+		//Returns the variant object associated with this GameObject
+		return variant;
+	}
+	public String getVariantData () {
+		//Returns this object's variant data
+		return variant.getVariantData ();
+	}
+	public String getVariantAttribute (String attributeName) {
+		//Returns the value of the variant attribute attributeName
+		return variant.getAttribute (attributeName);
+	}
+	public boolean hasVariantAttribute (String attributeName) {
+		//Returns true if the object has the variant passed for the argument. Must be in the format "name:value"
+		return variant.hasAttribute (attributeName);
 	}
 	public boolean hasParent (String parentId) {
 		Class c;

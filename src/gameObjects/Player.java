@@ -45,28 +45,28 @@ public class Player extends GameObject {
 					direction = DIRECTION_UP;
 					setY (getY () - speed);
 					if (getRoom ().isColliding (this.getHitbox ())) {
-						//this.backstepY ();
+						this.backstepY ();
 					}
 				}
 				if (keyCheck ('A')) {
 					direction = DIRECTION_LEFT;
 					setX (getX () - speed);
 					if (getRoom ().isColliding (this.getHitbox ())) {
-						//this.backstepX ();
+						this.backstepX ();
 					}
 				}
 				if (keyCheck ('S')) {
 					direction = DIRECTION_DOWN;
 					setY (getY () + speed);
 					if (getRoom ().isColliding (this.getHitbox ())) {
-						//this.backstepY ();
+						this.backstepY ();
 					}
 				}
 				if (keyCheck ('D')) {
 					direction = DIRECTION_RIGHT;
 					setX (getX () + speed);
 					if (getRoom ().isColliding (this.getHitbox ())) {
-						//this.backstepX ();
+						this.backstepX ();
 					}
 				}
 			}

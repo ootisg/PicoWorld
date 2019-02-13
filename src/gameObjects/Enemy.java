@@ -14,7 +14,7 @@ public abstract class Enemy extends GameObject {
 	@Override
 	public void frameEvent () {
 		if (invul == 0) {
-			if (((Sword)MainLoop.getObjectMatrix().get ("gameObjects.Sword", 0)).isCollidingRaster (this.getHitbox ())) {
+			if (getPlayer ().swordObject.isCollidingRaster (this.getHitbox ())) {
 				this.damageEvent ();
 			}
 		}
