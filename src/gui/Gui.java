@@ -15,12 +15,15 @@ public class Gui extends GameObject {
 	public TextInterface textInterface;
 	private ItemMenu itemMenu;
 	private CraftingMenu craftingMenu;
+	private StatsWindow statsWindow;
 	public Gui () {
 		this.declare (0, 0);
 		this.itemMenu = new ItemMenu (0, 0);
 		this.craftingMenu = new CraftingMenu ();
+		this.statsWindow = new StatsWindow ();
 		craftingMenu.addItemContainer (itemMenu);
 		craftingMenu.declare (0, 96);
+		statsWindow.declare (0, 0);
 		itemMenu.focus ();
 		craftingMenu.setHidden (true);
 		this.setPersistent (true);

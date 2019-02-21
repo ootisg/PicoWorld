@@ -1,6 +1,9 @@
 package resources;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +23,12 @@ public class Sprite {
 		width = image.getWidth ();
 		height = image.getHeight ();
 		isAnimated = false;
+	}
+	public Sprite (BufferedImage[] images) {
+		imageArray = images;
+		width = images [0].getWidth ();
+		height = images [0].getHeight ();
+		isAnimated = true;
 	}
 	public Sprite (String filepath) {
 		imageArray = new BufferedImage[1];
@@ -77,6 +86,29 @@ public class Sprite {
 		this.height = height;
 		isAnimated = true;
 	}
+	public Sprite getRotatedSprite (double angle) {
+		BufferedImage[] newImages = new BufferedImage[imageArray.length];
+		int newWidth;
+		if (width > height) {
+			newWidth = width;
+		} else {
+			newWidth = height;
+		}
+		newWidth = (int)Math.ceil (width * Math.sqrt (2));
+		int centerX = newWidth / 2;
+		int centerY = newWidth / 2;
+		for (int i = 0; i < newImages.length; i ++) {
+			BufferedImage workingImage = imageArray [i];
+			BufferedImage newImage = new BufferedImage (newWidth, newWidth, workingImage.getType ());
+			AffineTransform transform = new AffineTransform ();
+			transform.translate (centerX - workingImage.getWidth () / 2, centerY - workingImage.getHeight () / 2);
+			transform.rotate (angle, width / 2, height / 2);
+			AffineTransformOp operation = new AffineTransformOp (transform, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			operation.filter (workingImage, newImage);
+			newImages [i] = newImage;
+		}
+		return new Sprite (newImages);
+	}
 	public static void draw (BufferedImage image, int x, int y) {
 		Graphics bufferImage = MainLoop.getWindow ().getBuffer ();
 		if (bufferImage != null) {
@@ -130,5 +162,11 @@ public class Sprite {
 	}
 	public int getFrameCount () {
 		return imageArray.length;
+	}
+	public int getWidth () {
+		return width;
+	}
+	public int getHeight () {
+		return height;
 	}
 }

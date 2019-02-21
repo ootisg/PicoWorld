@@ -2,10 +2,13 @@ package main;
 
 import java.awt.Color;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import gameObjects.FlameElemental;
 import gameObjects.FrostElemental;
 import gameObjects.Particle;
 import gameObjects.Player;
+import gameObjects.Saveable;
 import items.*;
 
 public class GameCode extends GameAPI {
@@ -14,13 +17,20 @@ public class GameCode extends GameAPI {
 		//Runs on initialization
 		//MainLoop.getWindow ().setResolution (480, 480);
 		try {
-			getRoom ().loadRoom ("resources/maps/testmap.cmf");
+			Saveable.loadData ("saves/save.txt");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//System.out.println ("HIA");
+		try {
+			getRoom ().loadRoom ("resources/maps/testmap3.cmf");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		getPlayer ().declare (256, 32);
-		new FrostElemental ().declare (32, 32);
+		new FlameElemental ().declare (32, 32);
 		new ItemDrop (new GoldSword ()).declare (128, 128);
 		new ItemDrop (new Apple ()).declare (128, 150);
 		/*for (int i = 0; i < 576; i ++) {
@@ -45,6 +55,7 @@ public class GameCode extends GameAPI {
 	}
 	public void gameLoop () {
 		getRoom ().frameEvent ();
+		//Saveable.printSaves ();
 		//Runs once per frame
 	}
 }

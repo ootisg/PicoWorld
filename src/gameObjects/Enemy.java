@@ -3,19 +3,20 @@ package gameObjects;
 import main.GameObject;
 import main.MainLoop;
 
-public abstract class Enemy extends GameObject {
+public abstract class Enemy extends GameObject implements Damageable {
 	int invulTime = 20;
 	int invul = 0;
-	int health = 100;
+	double health = 100;
 	int baseDamage = 1;
 	float knockbackX = 0;
 	float knockbackY = 0;
+	float knockbackMagnitude = 4.5f;
 	int knockbackTime = 0;
 	@Override
 	public void frameEvent () {
 		if (invul == 0) {
 			if (getPlayer ().swordObject.isCollidingRaster (this.getHitbox ())) {
-				this.damageEvent ();
+				this.damageEvent (getPlayer ().swordObject);
 			}
 		}
 		if (health <= 0) {
@@ -41,10 +42,11 @@ public abstract class Enemy extends GameObject {
 	public void attackEvent () {
 		getPlayer ().damage (this.baseDamage);
 	}
-	public void damageEvent () {
+	
+	@Override
+	public void damageEvent (DamageSource source) {
 		invul = invulTime;
 		this.knockbackTime = 3;
-		float knockbackMagnitude = 4.5f;
 		switch (getPlayer ().direction) {
 			case Player.DIRECTION_UP:
 				this.knockbackY = -knockbackMagnitude;
@@ -59,20 +61,29 @@ public abstract class Enemy extends GameObject {
 				this.knockbackX = knockbackMagnitude;
 				break;
 		}
-		System.out.println("733T");
+		if (source instanceof Sword) {
+			damage (Integer.parseInt (((Sword) source).getSwordUsed ().getProperty ("attack")));
+		}
 	}
 	public void deathEvent () {
 		this.forget ();
 	}
-	public void damage (int amount) {
+	
+	@Override
+	public void damage (double amount) {
 		this.health -= amount;
 	}
-	public void setHealth (int health) {
+	
+	@Override
+	public void setHealth (double health) {
 		this.health = health;
 	}
-	public int getHealth () {
+	
+	@Override
+	public double getHealth () {
 		return this.health;
 	}
+	
 	public void enemyFrame () {
 		
 	}

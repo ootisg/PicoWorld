@@ -62,6 +62,13 @@ public class ObjectMatrix {
 		}
 		return objects;
 	}
+	public ArrayList<GameObject> getObjects (String objectType) {
+		int type = getTypeId (objectType);
+		if (type != -1) {
+			return objectMatrix.get (type);
+		}
+		return null;
+	}
 	public void callAll () {
 		ArrayList<GameObject> objects = getAll ();
 		Collections.sort (objects);

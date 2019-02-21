@@ -39,14 +39,5 @@ public final class MapConstants {
 			
 			new TileData ("bridgeTiles.png:0", "solid:false"),
 			new TileData ("bridgeTiles.png:1", "solid:false"),
-			
-			new TileData ("rockWalls.png:0", "solid:true"),
-			new TileData ("rockWalls.png:1", "solid:true"),
-			new TileData ("rockWalls.png:2", "solid:true"),
-			new TileData ("rockWalls.png:3", "solid:true"),
-			new TileData ("rockWalls.png:4", "solid:true"),
-			new TileData ("rockWalls.png:5", "solid:true"),
-			new TileData ("rockWalls.png:6", "solid:true"),
-			new TileData ("rockWalls.png:7", "solid:true"),
 	};
 }

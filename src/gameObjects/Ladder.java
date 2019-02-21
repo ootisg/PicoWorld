@@ -8,11 +8,11 @@ import main.GameObject;
 import main.MainLoop;
 import resources.Sprite;
 
-public class Hole extends GameObject {
+public class Ladder extends GameObject {
 	private boolean active = true;
-	public Hole () {
-		setSprite (new Sprite ("resources/sprites/hole.png"));
-		createHitbox (0, 0, 16, 16);
+	public Ladder () {
+		setSprite (new Sprite ("resources/sprites/ladder.png"));
+		createHitbox (0, 0, 16, 20);
 	}
 	@Override
 	public void frameEvent () {
@@ -25,13 +25,13 @@ public class Hole extends GameObject {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				ArrayList<GameObject> ladders = MainLoop.getObjectMatrix ().getObjects ("gameObjects.Ladder");
-				for (int i = 0; i < ladders.size (); i ++) {
-					if (ladders.get (i).getVariantAttribute ("id").equals (getVariantAttribute ("id"))) {
-						Ladder workingLadder = (Ladder)ladders.get (i);
-						workingLadder.deactivate ();
-						getPlayer ().setX (workingLadder.getX () + Double.parseDouble (workingLadder.getVariantAttribute ("xoffset")));
-						getPlayer ().setY (workingLadder.getY () + Double.parseDouble (workingLadder.getVariantAttribute ("yoffset")));
+				ArrayList<GameObject> holes = MainLoop.getObjectMatrix ().getObjects ("gameObjects.Hole");
+				for (int i = 0; i < holes.size (); i ++) {
+					if (holes.get (i).getVariantAttribute ("id").equals (getVariantAttribute ("id"))) {
+						Hole workingHole = (Hole)holes.get (i);
+						workingHole.deactivate ();
+						getPlayer ().setX (workingHole.getX () + Double.parseDouble (workingHole.getVariantAttribute ("xoffset")));
+						getPlayer ().setY (workingHole.getY () + Double.parseDouble (workingHole.getVariantAttribute ("yoffset")));
 						getPlayer ().focusView ();
 					}
 				}

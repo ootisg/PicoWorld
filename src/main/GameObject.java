@@ -10,6 +10,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	private Variant variant = new Variant ("");
 	private double x;
 	private double y;
+	private double[] startPos;
 	private double xprevious;
 	private double yprevious;
 	private int hitboxXOffset;
@@ -31,11 +32,13 @@ public abstract class GameObject extends GameAPI implements Comparable {
 		orderingNumber = MainLoop.getObjectMatrix ().getNextOrderNumber ();
 		this.x = x;
 		this.y = y;
+		this.startPos = new double[] {x, y};
 		xprevious = x;
 		yprevious = y;
 		hidden = false;
 		priority = 0;
 		isDeclared = true;
+		onDeclare ();
 	}
 	public void forget () {
 		//Removes this GameObject from the object matrix
@@ -122,8 +125,8 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	public Hitbox getHitbox () {
 		//Returns the hitbox object associated with this GameObject
 		if (hitbox != null) {
-			hitbox.x = (int) x + hitboxXOffset;
-			hitbox.y = (int) y + hitboxYOffset;
+			hitbox.x = (int) getX () + hitboxXOffset;
+			hitbox.y = (int) getY () + hitboxYOffset;
 			return hitbox;
 		} else {
 			return null;
@@ -145,25 +148,27 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	}
 	public boolean isColliding (GameObject gameObject) {
 		//Returns true if this GameObject is overlapping the given GameObject
-		if (gameObject.hitbox == null || getHitbox () == null) {
+		if (gameObject.getHitbox () == null || getHitbox () == null) {
 			return false;
-		} else if (getHitbox ().checkOverlap (gameObject.hitbox)) {
+		} else if (getHitbox ().checkOverlap (gameObject.getHitbox ())) {
 			return true;
 		}
+		//System.out.println (gameObject.hitbox.x + ", " + gameObject.hitbox.y + ", " + gameObject.hitbox.width + ", " + gameObject.hitbox.height);
+		//System.out.println (hitbox.x + ", " + hitbox.y + ", " + hitbox.width + ", " + hitbox.height);
 		return false;
 	}
 	public boolean isColliding (GameObject gameObject, double xTo, double yTo) {
 		//Returns true if this GameObject overlaps the given GameObject when moving to (xTo, yTo)
-		if (gameObject.hitbox == null || getHitbox () == null) {
+		if (gameObject.getHitbox () == null || getHitbox () == null) {
 			return false;
-		} else if (getHitbox ().checkVectorCollision (gameObject.hitbox, xTo, yTo) != null) {
+		} else if (getHitbox ().checkVectorCollision (gameObject.getHitbox (), xTo, yTo) != null) {
 			return true;
 		}
 		return false;
 	}
 	public boolean isColliding (String objectType) {
 		//Returns true if this GameObject is colliding with a GameObject on the object matrix of the type objectType
-		if (this.hitbox != null) {
+		if (this.getHitbox () != null) {
 			ObjectMatrix objectMatrix = MainLoop.getObjectMatrix ();
 			int nameListLength = objectMatrix.classNameList.size ();
 			ArrayList<GameObject> objectList = null;
@@ -177,7 +182,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 				for (int i = 0; i < objectListLength; i ++) {
 					if (objectList.get (i) != null) {
 						if (objectList.get (i).getHitbox () != null) {
-							if (getHitbox ().checkOverlap (objectList.get (i).getHitbox ())) {
+							if (objectList.get (i).isColliding (this)) {
 								return true;
 							}
 						}
@@ -190,7 +195,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	}
 	public double[] getCollidingCoords (String objectType, double xTo, double yTo) {
 		//Returns the coordinates at which a collision with this GameObject and an object on the object matrix of type objectType occurs
-		if (this.hitbox != null) {
+		if (this.getHitbox () != null) {
 			ObjectMatrix objectMatrix = MainLoop.getObjectMatrix ();
 			int nameListLength = objectMatrix.classNameList.size ();
 			ArrayList<GameObject> objectList = null;
@@ -218,7 +223,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	}
 	public GameObject getCollidingObject (String objectType, double xTo, double yTo) {
 		//Returns the object on the object matrix that this GameObject collides with when moving to (xTo, yTo). Returns null if no collision occurs.
-		if (this.hitbox != null) {
+		if (this.getHitbox () != null) {
 			ObjectMatrix objectMatrix = MainLoop.getObjectMatrix ();
 			int nameListLength = objectMatrix.classNameList.size ();
 			ArrayList<GameObject> objectList = null;
@@ -253,7 +258,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	public boolean isCollidingSameType () {
 		//Returns true if this GameObject is colliding with a GameObject on the object matrix of the same type (excluding itself)
 		String objectType = this.getClass ().getSimpleName ();
-		if (this.hitbox != null) {
+		if (this.getHitbox () != null) {
 			ObjectMatrix objectMatrix = MainLoop.getObjectMatrix ();
 			int nameListLength = objectMatrix.classNameList.size ();
 			ArrayList<GameObject> objectList = null;
@@ -277,7 +282,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	public double[] getCollisionCoordsSameType (double xTo, double yTo) {
 		//Returns the coordinates of a collision between this GameObject and an object on the object matrix of the same type (excluding itself) when this GameObject is moving to (xTo, yTo)
 		String objectType = this.getClass ().getSimpleName ();
-		if (this.hitbox != null) {
+		if (this.getHitbox () != null) {
 			ObjectMatrix objectMatrix = MainLoop.getObjectMatrix ();
 			int nameListLength = objectMatrix.classNameList.size ();
 			ArrayList<GameObject> objectList = null;
@@ -302,7 +307,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	public GameObject getCollidingObjectSameType (double xTo, double yTo) {
 		//Returns the GameObject of the same type on the object matrix colliding with this GameObject when moving to (xTo, yTo)
 		String objectType = this.getClass ().getSimpleName ();
-		if (this.hitbox != null) {
+		if (this.getHitbox () != null) {
 			ObjectMatrix objectMatrix = MainLoop.getObjectMatrix ();
 			int nameListLength = objectMatrix.classNameList.size ();
 			ArrayList<GameObject> objectList = null;
@@ -377,6 +382,9 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	public void onResume () {
 		//Called by MainLoop when the game is resumed
 	}
+	public void onDeclare () {
+		//Called right after the object is declared
+	}
 	public void setHidden (boolean hidden) {
 		this.hidden = hidden;
 	}
@@ -412,6 +420,9 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	public boolean getFlipVertical () {
 		//Returns the vertical flip state of this GameObject
 		return flipVertical;
+	}
+	public double[] getStartPos () {
+		return startPos;
 	}
 	public boolean isDeclared () {
 		return isDeclared;

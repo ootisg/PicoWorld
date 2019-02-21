@@ -18,6 +18,7 @@ import resources.Sprite;
 import resources.Spritesheet;
 
 public class Room {
+	private String roomName;
 	private Sprite[] tileList;
 	private String[] tileIdList;
 	private String[] objectList;
@@ -566,219 +567,226 @@ public class Room {
 		}
 	}
 	public void loadRoom (String path) throws FileNotFoundException {
+		String previousName = roomName;
+		roomName = path;
 		//Purges the gameObjects
-		ArrayList<ArrayList<GameObject>> objList = MainLoop.getObjectMatrix ().objectMatrix;
-		for (int i = 0; i < objList.size (); i ++) {
-			if (objList.get (i) != null) {
-				int listSize = objList.get (i).size ();
-				for (int j = 0; j < listSize; j ++) {
-					if (objList.get (i).get (j) != null && !objList.get (i).get (j).isPersistent ()) {
-						objList.get (i).get (j).forget ();
-					}
-				}
-			}
-		}
-		//Loads the CMF file at the given filepath
-		readBit = 0;
-		File file = null;
-		FileInputStream stream = null;
-		file = new File (path);
-		inData = new byte[(int) file.length ()];
-		stream = new FileInputStream (file);
 		try {
-			stream.read (inData);
-			stream.close ();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (readBits (24) != 0x434D46) {
-			System.out.println ("Error: file is corrupted or in an invalid format");
-		}
-		int version = readBits (8); //For future use
-		int layerCount = readBits (8); //For future use
-		//resizeLevel (readBits (16), readBits (16));
-		levelWidth = readBits (16);
-		levelHeight = readBits (16);
-		tileData = new short[layerCount][levelWidth][levelHeight];
-		for (int layer = 0; layer < layerCount; layer ++) {
-			for (int i = 0; i < levelWidth; i ++) {
-				for (int c = 0; c < levelHeight; c ++) {
-					tileData [layer][i][c] = -1;
-				}
-			}
-		}
-		int tilesUsedLength = readBits (16);
-		int objectsPlacedLength = readBits (32);
-		int tempReadBit = readBit;
-		int result = 0;
-		int index = 0;
-		//Parse tile set list
-		while (result != 0x3B) {
-			result = readBits (8);
-			index ++;
-		}
-		readBit = tempReadBit;
-		char[] tilesetNames = new char[index - 1];
-		for (int i = 0; i < index - 1; i ++) {
-			tilesetNames [i] = (char) readBits (8);
-		}
-		readBit += 8;
-		String tilesetList = new String (tilesetNames);
-		String[] tilesetNameArray = tilesetList.split (",");
-		//Parse object list
-		tempReadBit = readBit;
-		index = 0;
-		result = 0;
-		while (result != 0x3B) {
-			result = readBits (8);
-			index ++;
-		}
-		readBit = tempReadBit;
-		char[] objectNames = new char[index - 1];
-		for (int i = 0; i < index - 1; i ++) {
-			objectNames [i] = (char) readBits (8);
-		}
-		readBit += 8;
-		String objectString = new String (objectNames);
-		if (objectString.equals ("")) {
-			objectList = new String[0];
-		} else {
-			objectList = objectString.split (",");
-		}
-		//Import tiles
-		ArrayList<Sprite> tileSheet = new ArrayList<Sprite> ();
-		ArrayList<String> tileIdArrList = new ArrayList<String> ();
-		Spritesheet importSheet;
-		for (int i = 0; i < tilesetNameArray.length; i ++) {
-			//System.out.println("resources/tilesets/" + tilesetNameArray [i]);
-			importSheet = new Spritesheet ("resources/tilesets/" + tilesetNameArray [i]);
-			Sprite[] tempSheet = importSheet.toSpriteArray (16, 16);
-			//System.out.println(tempSheet.length);
-			for (int j = 0; j < tempSheet.length; j ++) {
-				tileSheet.add (tempSheet [j]);
-				tileIdArrList.add (tilesetNameArray [i] + ":" + String.valueOf (j));
-			}
-		}
-		short[] tilesUsed = new short[tilesUsedLength];
-		int tileBits = numBits (tilesUsedLength - 1);
-		tileList = new Sprite[tilesUsed.length];
-		tileIdList = new String[tilesUsed.length];
-		int tileSheetBits = numBits (tileSheet.size () - 1);
-		for (int i = 0; i < tilesUsedLength; i ++) {
-			tilesUsed [i] = (short) readBits (tileSheetBits);
-		}
-		for (int i = 0; i < tileList.length; i ++) {
-			tileList [i] = tileSheet.get (tilesUsed [i]);
-			tileIdList [i] = tileIdArrList.get (tilesUsed [i]);
-		}
-		for (int i = 0; i < tileList.length; i ++) {
-			tileSheet.add (tileList [i]);
-		}
-		collisionData = new boolean[tileIdList.length];
-		for (int i = 0; i < collisionData.length; i ++) {
-			TileData workingTile = tileAttributesList.getTile (tileIdList [i]);
-			if (workingTile != null) {
-				collisionData [i] = workingTile.isSolid ();
-			} else {
-				collisionData [i] = true;
-			}
-		}
-		//Import object icons
-		int widthBits = numBits (levelWidth - 1);
-		int heightBits = numBits (levelHeight - 1);
-		int objectBits = numBits (objectList.length - 1);
-		int objId;
-		int objX;
-		int objY;
-		Class<?> objectClass = null;
-		Constructor<?> constructor = null;
-		String workingName;
-		boolean hasVariants;
-		for (int i = 0; i < objectsPlacedLength; i ++) {
-			objId = readBits (objectBits);
-			objX = readBits (widthBits);
-			objY = readBits (heightBits);
-			if (objectList [objId].split ("#").length == 2) {
-				workingName = objectList [objId].split ("#")[0];
-				hasVariants = true;
-			} else {
-				workingName = objectList [objId];
-				hasVariants = false;
-			}
-			try {
-				objectClass = Class.forName ("gameObjects." + workingName);
-			}
-			catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				GameObject obj = (GameObject) objectClass.newInstance ();
-				obj.declare (objX * 16, objY * 16);
-				if (hasVariants) {
-					obj.setVariantData (objectList [objId].split ("#")[1]);
-				}
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			//objectList.add (new GameObject (readBits (objectBits), readBits (widthBits), readBits (heightBits)));
-		}
-		short id;
-		int x1;
-		int x2;
-		int y1;
-		int y2;
-		for (int layer = 0; layer < layerCount; layer ++) {
-			int fullRangesSize = readBits (32);
-			int horizRangesSize = readBits (32);
-			int vertRangesSize = readBits (32);
-			for (int i = 0; i < fullRangesSize; i ++) {
-				id = (short) readBits (tileBits);
-				x1 = readBits (widthBits);
-				x2 = readBits (widthBits);
-				y1 = readBits (heightBits);
-				y2 = readBits (heightBits);
-				//System.out.println(readBit);
-				for (int j = x1; j <= x2; j ++) {
-					for (int k = y1; k <= y2; k ++) {
-						tileData [layer][j][k] = id;
+			ArrayList<ArrayList<GameObject>> objList = MainLoop.getObjectMatrix ().objectMatrix;
+			for (int i = 0; i < objList.size (); i ++) {
+				if (objList.get (i) != null) {
+					int listSize = objList.get (i).size ();
+					for (int j = 0; j < listSize; j ++) {
+						if (objList.get (i).get (j) != null && !objList.get (i).get (j).isPersistent ()) {
+							objList.get (i).get (j).forget ();
+						}
 					}
 				}
 			}
-			for (int i = 0; i < horizRangesSize; i ++) {
-				id = (short) readBits (tileBits);
-				x1 = readBits (widthBits);
-				x2 = readBits (widthBits);
-				y1 = readBits (heightBits);
-				for (int j = x1; j <= x2; j ++) {
-					tileData [layer][j][y1] = id;
-				}
+			//Loads the CMF file at the given filepath
+			readBit = 0;
+			File file = null;
+			FileInputStream stream = null;
+			file = new File (path);
+			inData = new byte[(int) file.length ()];
+			stream = new FileInputStream (file);
+			try {
+				stream.read (inData);
+				stream.close ();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			for (int i = 0; i < vertRangesSize; i ++) {
-				id = (short) readBits (tileBits);
-				x1 = readBits (widthBits);
-				y1 = readBits (heightBits);
-				y2 = readBits (heightBits);
-				for (int j = y1; j <= y2; j ++) {
-					tileData [layer][x1][j] = id;
-				}
+			if (readBits (24) != 0x434D46) {
+				System.out.println ("Error: file is corrupted or in an invalid format");
 			}
-			for (int i = 0; i < levelWidth; i ++) {
-				for (int c = 0; c < levelHeight; c ++) {
-					if (tileData [layer][i][c] == -1) {
-						tileData [layer][i][c] = (short) readBits (tileBits);
+			int version = readBits (8); //For future use
+			int layerCount = readBits (8); //For future use
+			//resizeLevel (readBits (16), readBits (16));
+			levelWidth = readBits (16);
+			levelHeight = readBits (16);
+			tileData = new short[layerCount][levelWidth][levelHeight];
+			for (int layer = 0; layer < layerCount; layer ++) {
+				for (int i = 0; i < levelWidth; i ++) {
+					for (int c = 0; c < levelHeight; c ++) {
+						tileData [layer][i][c] = -1;
 					}
 				}
 			}
+			int tilesUsedLength = readBits (16);
+			int objectsPlacedLength = readBits (32);
+			int tempReadBit = readBit;
+			int result = 0;
+			int index = 0;
+			//Parse tile set list
+			while (result != 0x3B) {
+				result = readBits (8);
+				index ++;
+			}
+			readBit = tempReadBit;
+			char[] tilesetNames = new char[index - 1];
+			for (int i = 0; i < index - 1; i ++) {
+				tilesetNames [i] = (char) readBits (8);
+			}
+			readBit += 8;
+			String tilesetList = new String (tilesetNames);
+			String[] tilesetNameArray = tilesetList.split (",");
+			//Parse object list
+			tempReadBit = readBit;
+			index = 0;
+			result = 0;
+			while (result != 0x3B) {
+				result = readBits (8);
+				index ++;
+			}
+			readBit = tempReadBit;
+			char[] objectNames = new char[index - 1];
+			for (int i = 0; i < index - 1; i ++) {
+				objectNames [i] = (char) readBits (8);
+			}
+			readBit += 8;
+			String objectString = new String (objectNames);
+			if (objectString.equals ("")) {
+				objectList = new String[0];
+			} else {
+				objectList = objectString.split (",");
+			}
+			//Import tiles
+			ArrayList<Sprite> tileSheet = new ArrayList<Sprite> ();
+			ArrayList<String> tileIdArrList = new ArrayList<String> ();
+			Spritesheet importSheet;
+			for (int i = 0; i < tilesetNameArray.length; i ++) {
+				//System.out.println("resources/tilesets/" + tilesetNameArray [i]);
+				importSheet = new Spritesheet ("resources/tilesets/" + tilesetNameArray [i]);
+				Sprite[] tempSheet = importSheet.toSpriteArray (16, 16);
+				//System.out.println(tempSheet.length);
+				for (int j = 0; j < tempSheet.length; j ++) {
+					tileSheet.add (tempSheet [j]);
+					tileIdArrList.add (tilesetNameArray [i] + ":" + String.valueOf (j));
+				}
+			}
+			short[] tilesUsed = new short[tilesUsedLength];
+			int tileBits = numBits (tilesUsedLength - 1);
+			tileList = new Sprite[tilesUsed.length];
+			tileIdList = new String[tilesUsed.length];
+			int tileSheetBits = numBits (tileSheet.size () - 1);
+			for (int i = 0; i < tilesUsedLength; i ++) {
+				tilesUsed [i] = (short) readBits (tileSheetBits);
+			}
+			for (int i = 0; i < tileList.length; i ++) {
+				tileList [i] = tileSheet.get (tilesUsed [i]);
+				tileIdList [i] = tileIdArrList.get (tilesUsed [i]);
+			}
+			for (int i = 0; i < tileList.length; i ++) {
+				tileSheet.add (tileList [i]);
+			}
+			collisionData = new boolean[tileIdList.length];
+			for (int i = 0; i < collisionData.length; i ++) {
+				TileData workingTile = tileAttributesList.getTile (tileIdList [i]);
+				if (workingTile != null) {
+					collisionData [i] = workingTile.isSolid ();
+				} else {
+					collisionData [i] = true;
+				}
+			}
+			//Import object icons
+			int widthBits = numBits (levelWidth - 1);
+			int heightBits = numBits (levelHeight - 1);
+			int objectBits = numBits (objectList.length - 1);
+			int objId;
+			int objX;
+			int objY;
+			Class<?> objectClass = null;
+			Constructor<?> constructor = null;
+			String workingName;
+			boolean hasVariants;
+			for (int i = 0; i < objectsPlacedLength; i ++) {
+				objId = readBits (objectBits);
+				objX = readBits (widthBits);
+				objY = readBits (heightBits);
+				if (objectList [objId].split ("#").length == 2) {
+					workingName = objectList [objId].split ("#")[0];
+					hasVariants = true;
+				} else {
+					workingName = objectList [objId];
+					hasVariants = false;
+				}
+				try {
+					objectClass = Class.forName ("gameObjects." + workingName);
+				}
+				catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					GameObject obj = (GameObject) objectClass.newInstance ();
+					obj.declare (objX * 16, objY * 16);
+					if (hasVariants) {
+						obj.setVariantData (objectList [objId].split ("#")[1]);
+					}
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//objectList.add (new GameObject (readBits (objectBits), readBits (widthBits), readBits (heightBits)));
+			}
+			short id;
+			int x1;
+			int x2;
+			int y1;
+			int y2;
+			for (int layer = 0; layer < layerCount; layer ++) {
+				int fullRangesSize = readBits (32);
+				int horizRangesSize = readBits (32);
+				int vertRangesSize = readBits (32);
+				for (int i = 0; i < fullRangesSize; i ++) {
+					id = (short) readBits (tileBits);
+					x1 = readBits (widthBits);
+					x2 = readBits (widthBits);
+					y1 = readBits (heightBits);
+					y2 = readBits (heightBits);
+					//System.out.println(readBit);
+					for (int j = x1; j <= x2; j ++) {
+						for (int k = y1; k <= y2; k ++) {
+							tileData [layer][j][k] = id;
+						}
+					}
+				}
+				for (int i = 0; i < horizRangesSize; i ++) {
+					id = (short) readBits (tileBits);
+					x1 = readBits (widthBits);
+					x2 = readBits (widthBits);
+					y1 = readBits (heightBits);
+					for (int j = x1; j <= x2; j ++) {
+						tileData [layer][j][y1] = id;
+					}
+				}
+				for (int i = 0; i < vertRangesSize; i ++) {
+					id = (short) readBits (tileBits);
+					x1 = readBits (widthBits);
+					y1 = readBits (heightBits);
+					y2 = readBits (heightBits);
+					for (int j = y1; j <= y2; j ++) {
+						tileData [layer][x1][j] = id;
+					}
+				}
+				for (int i = 0; i < levelWidth; i ++) {
+					for (int c = 0; c < levelHeight; c ++) {
+						if (tileData [layer][i][c] == -1) {
+							tileData [layer][i][c] = (short) readBits (tileBits);
+						}
+					}
+				}
+			}
+		} catch (FileNotFoundException e) {
+			roomName = previousName;
+			throw e;
 		}
 	}
 	public int numBits (int num) {
@@ -844,6 +852,9 @@ public class Room {
 	}
 	public void setTileAttributesList (TileAttributesList tileAttributesList) {
 		this.tileAttributesList = tileAttributesList;
+	}
+	public String getRoomName () {
+		return roomName;
 	}
 	public boolean tileInBounds (int x, int y) {
 		if (x >= 0 && x < this.levelWidth && y >= 0 && y < this.levelHeight) {

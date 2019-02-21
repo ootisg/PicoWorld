@@ -9,7 +9,7 @@ import main.GameObject;
 import main.Hitbox;
 import main.ObjectMatrix;
 
-public class Sword extends GameObject {
+public class Sword extends GameObject implements DamageSource {
 	private Raster alphaRaster;
 	private BufferedImage usedImage;
 	private GameItem swordUsed;
@@ -46,5 +46,9 @@ public class Sword extends GameObject {
 	@Override
 	public void draw () {
 		//Do nothing
+	}
+	@Override
+	public double getBaseDamage () {
+		return 10;
 	}
 }

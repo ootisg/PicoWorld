@@ -1,14 +1,17 @@
 package projectiles;
 
+import gameObjects.DamageSource;
 import main.GameObject;
 
-public abstract class Projectile extends GameObject {
+public abstract class Projectile extends GameObject implements DamageSource {
 	private double velocityX;
 	private double velocityY;
+	
 	@Override
 	public void frameEvent () {
 		this.setX (this.getX () + velocityX);
 		this.setY (this.getY () + velocityY);
+		projectileFrame ();
 	}
 	public void projectileFrame () {
 		
