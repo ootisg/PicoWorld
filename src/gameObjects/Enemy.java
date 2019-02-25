@@ -3,11 +3,11 @@ package gameObjects;
 import main.GameObject;
 import main.MainLoop;
 
-public abstract class Enemy extends GameObject implements Damageable {
+public abstract class Enemy extends GameObject implements Damageable, DamageSource {
 	int invulTime = 20;
 	int invul = 0;
 	double health = 100;
-	int baseDamage = 1;
+	double baseDamage = 10;
 	float knockbackX = 0;
 	float knockbackY = 0;
 	float knockbackMagnitude = 4.5f;
@@ -40,7 +40,7 @@ public abstract class Enemy extends GameObject implements Damageable {
 		//System.out.println(this.knockbackTime);
 	}
 	public void attackEvent () {
-		getPlayer ().damage (this.baseDamage);
+		getPlayer ().damageEvent (this);
 	}
 	
 	@Override
@@ -82,6 +82,11 @@ public abstract class Enemy extends GameObject implements Damageable {
 	@Override
 	public double getHealth () {
 		return this.health;
+	}
+	
+	@Override
+	public double getBaseDamage () {
+		return baseDamage;
 	}
 	
 	public void enemyFrame () {

@@ -1,0 +1,1 @@
+resources/maps/testmap3.cmf:116392064:opened

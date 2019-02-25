@@ -9,6 +9,7 @@ import gameObjects.FrostElemental;
 import gameObjects.Particle;
 import gameObjects.Player;
 import gameObjects.Saveable;
+import gameObjects.TestEnemy;
 import items.*;
 
 public class GameCode extends GameAPI {
@@ -30,6 +31,7 @@ public class GameCode extends GameAPI {
 			e.printStackTrace();
 		}
 		getPlayer ().declare (256, 32);
+		new TestEnemy ().declare (128, 32);
 		new FlameElemental ().declare (32, 32);
 		new ItemDrop (new GoldSword ()).declare (128, 128);
 		new ItemDrop (new Apple ()).declare (128, 150);

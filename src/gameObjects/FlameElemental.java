@@ -29,7 +29,7 @@ public class FlameElemental extends Enemy {
 		this.particleColor = new Color (0xFF, 0xA5, 0x00, 0x80);
 		this.densityCoefficient = .2; //Should be .2 while moving, .07 while idle
 		this.particleSpeedCoefficient = .5;
-		this.speed = 3;
+		this.speed = 2.5;
 		this.sightRange = 128;
 		this.health = 15;
 		this.knockbackMagnitude = 10f;
