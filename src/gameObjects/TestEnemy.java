@@ -9,6 +9,8 @@ public class TestEnemy extends FourDirectionalEnemy {
 	
 	private double movementSpeed = 2;
 	
+	private int sightRadius = 20;
+	
 	public TestEnemy () {
 		super ();
 		setDirection (Direction.RIGHT);
@@ -53,26 +55,30 @@ public class TestEnemy extends FourDirectionalEnemy {
 				targetY = -1;
 			}
 		} else {
-			if (Math.abs (getX () - getPlayer ().getX ()) > Math.abs (getY () - getPlayer ().getY ())) {
-				targetX = getPlayer ().getX ();
-				targetY = getY ();
-				if (getX () > targetX) {
-					setDirection (Direction.LEFT);
-					setSpeed (movementSpeed);
-				} else {
-					setDirection (Direction.RIGHT);
-					setSpeed (movementSpeed);
-				}
+			setNewTarget (Math.abs (getX () - getPlayer ().getX ()) > Math.abs (getY () - getPlayer ().getY ()));
+		}
+	}
+	
+	public void setNewTarget (boolean retainY) {
+		if (retainY) {
+			targetX = getPlayer ().getX ();
+			targetY = getY ();
+			if (getX () > targetX) {
+				setDirection (Direction.LEFT);
+				setSpeed (movementSpeed);
 			} else {
-				targetX = getX ();
-				targetY = getPlayer ().getY ();
-				if (getY () > targetY) {
-					setDirection (Direction.UP);
-					setSpeed (movementSpeed);
-				} else {
-					setDirection (Direction.DOWN);
-					setSpeed (movementSpeed);
-				}
+				setDirection (Direction.RIGHT);
+				setSpeed (movementSpeed);
+			}
+		} else {
+			targetX = getX ();
+			targetY = getPlayer ().getY ();
+			if (getY () > targetY) {
+				setDirection (Direction.UP);
+				setSpeed (movementSpeed);
+			} else {
+				setDirection (Direction.DOWN);
+				setSpeed (movementSpeed);
 			}
 		}
 	}

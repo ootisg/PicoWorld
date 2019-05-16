@@ -22,6 +22,11 @@ public class Spritesheet {
 		width = img.getWidth ();
 		height = img.getHeight ();
 	}
+	public Spritesheet (BufferedImage img) {
+		this.img = img;
+		width = img.getWidth ();
+		height = img.getHeight ();
+	}
 	public BufferedImage getImage () {
 		return img;
 	}

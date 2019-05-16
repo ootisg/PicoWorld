@@ -19,6 +19,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 	private MappedUi statWindow;
 	
 	private int selectedWeapon;
+	private int selectedSpell;
 	
 	public ItemMenu (int x, int y) {
 		super (getSprites ().itemUi);
@@ -40,6 +41,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		statWindow.setPriority (-2);
 		
 		selectedWeapon = -1;
+		selectedSpell = -1;
 	}
 	public boolean addItem (GameItem item) {
 		for (int i = 0; i < items [GameItem.getValue (item.getType ())].length; i ++) {
@@ -55,6 +57,9 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		if (c == KeyEvent.VK_SPACE) {
 			if (pageIndex == GameItem.getValue (ItemType.WEAPON)) {
 				selectedWeapon = selectIndex;
+			}
+			if (pageIndex == GameItem.getValue (ItemType.SPELL)) {
+				selectedSpell = selectIndex;
 			}
 		}
 		if (keyCheck (KeyEvent.VK_SHIFT)) {
@@ -138,6 +143,12 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return items [GameItem.getValue (ItemType.WEAPON)][selectedWeapon];
 	}
+	public GameItem getEquippedSpell () {
+		if (selectedSpell == -1) {
+			return null;
+		}
+		return items [GameItem.getValue (ItemType.SPELL)][selectedSpell];
+	}
 	public void setItems (GameItem[][] items) {
 		this.items = items;
 	}
@@ -154,7 +165,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 						itemHealth.draw ((int)getX () + (1 + i / selectionHeight) * 16, (int)getY () + (1 + i % selectionHeight) * 16 + 14, (int)(Math.ceil (Double.parseDouble (items [pageIndex][i].getProperty ("health")) / Double.parseDouble (items [pageIndex][i].getProperty ("maxHealth")) * 14)) - 1);
 					}
 				}
-				items [pageIndex][i].getIcon ().draw ((int)getX () + (1 + i / selectionHeight) * 16, (int)getY () + (1 + i % selectionHeight) * 16);
+				items [pageIndex][i].draw ((int)getX () + (1 + i / selectionHeight) * 16, (int)getY () + (1 + i % selectionHeight) * 16);
 			}
 		}
 		for (int i = 0; i < pageIcons.length; i ++) {
@@ -166,6 +177,9 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		getSprites ().selectedBorder.draw ((int)getX (), (int)getY () + pageIndex * 16);
 		if (pageIndex == GameItem.getValue (ItemType.WEAPON) && selectedWeapon != -1) {
 			drawText ("E", (1 + selectedWeapon / selectionHeight) * 16 + 4, (1 + selectedWeapon % selectionHeight) * 16 + 4);
+		}
+		if (pageIndex == GameItem.getValue (ItemType.SPELL) && selectedSpell != -1) {
+			drawText ("E", (1 + selectedSpell / selectionHeight) * 16 + 4, (1 + selectedSpell % selectionHeight) * 16 + 4);
 		}
 		if (items [pageIndex][selectIndex] != null) {
 			String itemName;

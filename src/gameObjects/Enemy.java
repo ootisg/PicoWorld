@@ -2,6 +2,7 @@ package gameObjects;
 
 import main.GameObject;
 import main.MainLoop;
+import projectiles.PlayerMagic;
 
 public abstract class Enemy extends GameObject implements Damageable, DamageSource {
 	int invulTime = 20;
@@ -18,6 +19,9 @@ public abstract class Enemy extends GameObject implements Damageable, DamageSour
 			if (getPlayer ().swordObject.isCollidingRaster (this.getHitbox ())) {
 				this.damageEvent (getPlayer ().swordObject);
 			}
+		}
+		if (isColliding ("projectiles.PlayerMagic")) {
+			this.damageEvent (new PlayerMagic (0));
 		}
 		if (health <= 0) {
 			this.deathEvent ();
@@ -63,6 +67,9 @@ public abstract class Enemy extends GameObject implements Damageable, DamageSour
 		}
 		if (source instanceof Sword) {
 			damage (Integer.parseInt (((Sword) source).getSwordUsed ().getProperty ("attack")));
+		}
+		if (source instanceof PlayerMagic) {
+			damage (source.getBaseDamage ());
 		}
 	}
 	public void deathEvent () {

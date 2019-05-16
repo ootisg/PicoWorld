@@ -118,6 +118,32 @@ public class ObjectMatrix {
 		}
 		return null;
 	}
+	public ArrayList<GameObject> getAll (Class parentType) {
+		ArrayList<GameObject> objects = new ArrayList<GameObject> ();
+		for (int i = 0; i < objectMatrix.size (); i ++) {
+			GameObject first = getFirst (objectMatrix.get (i));
+			if (first != null) {
+				if (parentType.isAssignableFrom (first.getClass ())) {
+					for (int j = 0; j < objectMatrix.get (i).size (); j ++) {
+						if (objectMatrix.get (i).get (j) != null) {
+							objects.add (objectMatrix.get (i).get (j));
+						}
+					}
+				}
+			}
+		}
+		return objects;
+	}
+	public GameObject getFirst (ArrayList<GameObject> objs) {
+		GameObject current = null;
+		for (int i = 0; i < objs.size (); i ++) {
+			if (objs.get (i) != null) {
+				current = objs.get (i);
+				break;
+			}
+		}
+		return current;
+	}
 	public int getTypeId (String objectName) {
 		//Gets the x-coordinate on the object matrix of the name objectName
 		for (int i = 0; i < classNameList.size (); i ++) {

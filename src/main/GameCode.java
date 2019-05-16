@@ -11,6 +11,7 @@ import gameObjects.Player;
 import gameObjects.Saveable;
 import gameObjects.TestEnemy;
 import items.*;
+import projectiles.PlayerMagic;
 
 public class GameCode extends GameAPI {
 	private GameWindow gameWindow;
@@ -34,7 +35,6 @@ public class GameCode extends GameAPI {
 		new TestEnemy ().declare (128, 32);
 		new FlameElemental ().declare (32, 32);
 		new ItemDrop (new GoldSword ()).declare (128, 128);
-		new ItemDrop (new Apple ()).declare (128, 150);
 		/*for (int i = 0; i < 576; i ++) {
 		 //MAKES APPLES
 			for (int j = 0; j < 576; j ++) {

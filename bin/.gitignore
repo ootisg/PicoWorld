@@ -1,6 +1,8 @@
-/gameObjects/
+/gui/
+/items/
 /main/
+/map/
 /projectiles/
 /resources/
-/gui/
 /unused/
+/gameObjects/

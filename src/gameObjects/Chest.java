@@ -46,7 +46,7 @@ public class Chest extends Saveable {
 	@Override
 	public void load () {
 		if (getSaveData () != null) {
-			forget ();
+			//forget ();
 		}
 	}
 }

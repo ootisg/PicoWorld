@@ -17,4 +17,8 @@ public class ItemDrop extends GameObject {
 			}
 		}
 	}
+	@Override
+	public void draw () {
+		item.draw ((int)(getX () - getRoom ().getViewX ()), (int)(getY () - getRoom ().getViewY ()));
+	}
 }

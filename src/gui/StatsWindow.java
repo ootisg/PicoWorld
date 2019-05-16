@@ -21,6 +21,7 @@ public class StatsWindow extends MappedUi {
 		ArrayList<String> lines = new ArrayList<String> ();
 		//Add stats to the stats window
 		lines.add ("HEALTH: " + (int)getPlayer ().getHealth () + "/" + (int)getPlayer ().getMaxHealth ());
+		lines.add ("MANA: " + (int)getPlayer ().getMana () + "/" + (int)getPlayer ().getMaxMana ());
 		int largestStringLength = 0;
 		for (int i = 0; i < lines.size (); i ++) {
 			if (lines.get (i).length () > largestStringLength) {

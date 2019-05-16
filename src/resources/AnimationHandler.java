@@ -8,13 +8,14 @@ public class AnimationHandler {
 	private int animationTime = 0;
 	private double animationSpeed = 0.25;
 	private boolean enabled = true;
+	private boolean ignorePause = false;
 	public AnimationHandler (Sprite sprite) {
 		this.sprite = sprite;
 	}
 	public void animate (int x, int y, boolean flipHorizontal, boolean flipVertical) {
 		sprite.setFrame (frame);
 		sprite.draw (x, y, flipHorizontal, flipVertical);
-		if (!MainLoop.isPaused ()) {
+		if (!MainLoop.isPaused () || ignorePause) {
 			if (animationTime >= Math.round (1/animationSpeed)) {
 				frame ++;
 				animationTime = 0;
@@ -42,5 +43,11 @@ public class AnimationHandler {
 	}
 	public int getFrame () {
 		return this.frame;
+	}
+	public void setIgnorePause (boolean ignorePause) {
+		this.ignorePause = ignorePause;
+	}
+	public boolean ignoresPause () {
+		return ignorePause;
 	}
 }

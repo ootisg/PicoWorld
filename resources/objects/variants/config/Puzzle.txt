@@ -1,0 +1,6 @@
+type:query
+reward:query
+boundXOffset:query
+boundYOffset:query
+boundWidth:query
+boundHeight:query

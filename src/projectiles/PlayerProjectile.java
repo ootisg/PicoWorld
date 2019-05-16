@@ -1,5 +1,5 @@
 package projectiles;
 
-public class PlayerProjectile {
+public abstract class PlayerProjectile extends Projectile {
 
 }

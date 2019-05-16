@@ -1,30 +1,47 @@
 package items;
 
+import resources.AnimationHandler;
 import resources.Sprite;
+import resources.Spritesheet;
 
 public abstract class GameItem {
 	private String name;
 	private String properties;
 	private Sprite icon;
+	protected AnimationHandler animationHandler;
 	private ItemType type;
 	public static enum ItemType {
 		WEAPON, EQUIPMENT, CONSUMABLE, MATERIAL, SPELL;
 	}
+	private GameItem () {
+		animationHandler = new AnimationHandler (null);
+		animationHandler.setIgnorePause (true);
+	}
 	protected GameItem (ItemType type) {
+		this ();
 		this.name = this.getClass ().getSimpleName ();
-		this.icon = new Sprite ("resources/sprites/items/" + this.name + ".png");
+		setIcon (new Sprite ("resources/sprites/items/" + this.name + ".png"));
+		this.type = type;
+		this.properties = "";
+	}
+	protected GameItem (Sprite icon, ItemType type) {
+		this ();
+		this.name = this.getClass ().getSimpleName ();
+		setIcon (icon);
 		this.type = type;
 		this.properties = "";
 	}
 	protected GameItem (String name, Sprite icon, ItemType type) {
+		this ();
 		this.name = name;
-		this.icon = icon;
+		setIcon (icon);
 		this.type = type;
 		this.properties = "";
 	}
 	protected GameItem (GameItem item) {
+		this ();
 		this.name = item.name;
-		this.icon = item.icon;
+		setIcon (item.icon);
 		this.type = item.type;
 		this.properties = item.properties;
 	}
@@ -106,10 +123,21 @@ public abstract class GameItem {
 		this.name = name;
 	}
 	protected void setIcon (Sprite icon) {
+		if (icon.getWidth () > 16 || icon.getHeight () > 16) {
+			Spritesheet sheet = new Spritesheet (icon.getImageArray ()[0]);
+			icon = new Sprite (sheet, 16, 16);
+		}
 		this.icon = icon;
+		animationHandler.setSprite (icon);
+	}
+	protected void setAnimationSpeed (double speed) {
+		animationHandler.setAnimationSpeed (speed);
 	}
 	public boolean use () {
 		return false;
+	}
+	public void draw (int x, int y) {
+		animationHandler.animate (x, y, false, false);
 	}
 	@Override
 	public boolean equals (Object o) {
