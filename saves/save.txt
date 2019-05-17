@@ -1,2 +1,3 @@
 resources/maps/testmap3.cmf:116392064:opened
 resources/maps/cave1.cmf:20971952:opened
+resources/maps/testmap3.cmf:121636176:opened

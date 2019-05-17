@@ -1,5 +1,6 @@
-package items;
+package gameObjects;
 
+import items.GameItem;
 import main.GameObject;
 
 public class ItemDrop extends GameObject {

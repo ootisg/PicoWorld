@@ -180,7 +180,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 			if (objectList != null) {
 				int objectListLength = objectList.size ();
 				for (int i = 0; i < objectListLength; i ++) {
-					if (objectList.get (i) != null) {
+					if (objectList.get (i) != null && objectList.get (i) != this) {
 						if (objectList.get (i).getHitbox () != null) {
 							if (objectList.get (i).isColliding (this)) {
 								return true;
@@ -208,7 +208,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 			if (objectList != null) {
 				int objectListLength = objectList.size ();
 				for (int i = 0; i < objectListLength; i ++) {
-					if (objectList.get (i) != null) {
+					if (objectList.get (i) != null && objectList.get (i) != this) {
 						if (objectList.get (i).getHitbox () != null) {
 							if (objectList.get (i).isColliding (this)) {
 								objs.add (objectList.get (i));
@@ -216,7 +216,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 						}
 					}
 				}
-				return objectList;
+				return objs;
 			}
 		}
 		return new ArrayList<GameObject> ();

@@ -58,6 +58,9 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 			if (pageIndex == GameItem.getValue (ItemType.WEAPON)) {
 				selectedWeapon = selectIndex;
 			}
+			if (pageIndex == GameItem.getValue (ItemType.CONSUMABLE)) {
+				items [pageIndex][selectIndex].use ();
+			}
 			if (pageIndex == GameItem.getValue (ItemType.SPELL)) {
 				selectedSpell = selectIndex;
 			}

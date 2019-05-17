@@ -29,6 +29,7 @@ public class Player extends GameObject implements Damageable {
 	int invulLength = 10;
 	int healthbarTimer = 0;
 	boolean swinging = false;
+	boolean magicSelected = false;
 	public static final int DIRECTION_UP = 0;
 	public static final int DIRECTION_LEFT = 1;
 	public static final int DIRECTION_DOWN = 2;
@@ -54,10 +55,10 @@ public class Player extends GameObject implements Damageable {
 		this.healthBar = new StatusBar (new Sprite (new Spritesheet ("resources/sprites/itemhealth.png"), 16, 1));
 		this.manaBar = new StatusBar (new Sprite (new Spritesheet ("resources/sprites/manabar.png"), 16, 1));
 		statusBars = new LinkedList<StatusBar> ();
-		setHealth (50);
 		setMaxHealth (50);
-		setMana (50);
+		setHealth (50);
 		setMaxMana (50);
+		setMana (50);
 		setPersistent (true);
 	}
 	@Override
@@ -65,7 +66,18 @@ public class Player extends GameObject implements Damageable {
 		if (invulTime != 0) {
 			invulTime --;
 		}
-		if (!keyCheck (KeyEvent.VK_SHIFT)) {
+		if (keyPressed (KeyEvent.VK_SHIFT)) {
+			if (magicSelected) {
+				if (getGui ().getItemMenu ().getEquippedWeapon () != null) {
+					magicSelected = false;
+				}
+			} else {
+				if (getGui ().getItemMenu ().getEquippedSpell () != null) {
+					magicSelected = true;
+				}
+			}
+		}
+		if (/*!keyCheck (KeyEvent.VK_SHIFT)*/true) {
 			if (!swinging) {
 				if (keyCheck ('W')) {
 					direction = DIRECTION_UP;
@@ -108,16 +120,19 @@ public class Player extends GameObject implements Damageable {
 				this.getAnimationHandler ().setFrame (direction);
 				this.getAnimationHandler ().setAnimationSpeed (0);
 			}
-			if (keyPressed (0x20) && !swinging) {
-				GameItem equippedWeapon = getGui ().getItemMenu ().getEquippedWeapon ();
-				if (equippedWeapon != null) {
-					equippedWeapon.use ();
-				}
-			}
-			if (keyPressed ('Q')) {
-				GameItem equippedSpell = getGui ().getItemMenu ().getEquippedSpell ();
-				if (equippedSpell != null) {
-					equippedSpell.use ();
+			if (keyPressed (0x20)) {
+				if (magicSelected) {
+					GameItem equippedSpell = getGui ().getItemMenu ().getEquippedSpell ();
+					if (equippedSpell != null) {
+						equippedSpell.use ();
+					}
+				} else {
+					if (!swinging) {
+						GameItem equippedWeapon = getGui ().getItemMenu ().getEquippedWeapon ();
+						if (equippedWeapon != null) {
+							equippedWeapon.use ();
+						}
+					}
 				}
 			}
 			double x = this.getX ();
@@ -197,6 +212,19 @@ public class Player extends GameObject implements Damageable {
 				working.render ((int)(this.getX () - getRoom ().getViewX ()), (int)(this.getY () - getRoom ().getViewY () + offset));
 			}
 			offset -= 4;
+		}
+		if (keyCheck (KeyEvent.VK_SHIFT)) {
+			if (magicSelected) {
+				GameItem working = getGui ().getItemMenu ().getEquippedSpell ();
+				if (working != null) {
+					working.draw (0, 0);
+				}
+			} else {
+				GameItem working = getGui ().getItemMenu ().getEquippedWeapon ();
+				if (working != null) {
+					working.draw (0, 0);
+				}
+			}
 		}
 	}
 	public void useSword (GameItem weapon) {
@@ -298,12 +326,20 @@ public class Player extends GameObject implements Damageable {
 	
 	@Override
 	public void setHealth (double health) {
-		this.health = health;
+		if (health > maxHealth) {
+			health = maxHealth;
+		} else {
+			this.health = health;
+		}
 		healthBar.setCurrentFill (health);
 	}
 	
 	public void setMana (double mana) {
-		this.mana = mana;
+		if (mana > maxMana) {
+			mana = maxMana;
+		} else {
+			this.mana = mana;
+		}
 		manaBar.setCurrentFill (mana);
 	}
 	
