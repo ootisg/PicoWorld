@@ -19,26 +19,32 @@ public class ItemDrop extends GameObject {
 		variantFill = false;
 	}
 	@Override
-	public void frameEvent () {
+	public void onDeclare () {
 		if (variantFill) {
 			try {
 				this.item = (GameItem)Class.forName ("items." + getVariantAttribute ("item")).newInstance ();
-				this.setSprite (item.getIcon ());
-				this.createHitbox (0, 0, 16, 16);
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			variantFill = false;
 		}
+		this.setSprite (item.getIcon ());
+		this.createHitbox (0, 0, 16, 16);
+	}
+	@Override
+	public void frameEvent () {
 		if (isColliding ("gameObjects.Player")) {
 			if (getGui ().getItemMenu ().addItem (item)) {
-				this.forget ();
+				collect ();
 			}
 		}
 	}
 	@Override
 	public void draw () {
 		item.draw ((int)(getX () - getRoom ().getViewX ()), (int)(getY () - getRoom ().getViewY ()));
+	}
+	public boolean collect () {
+		forget ();
+		return true;
 	}
 }

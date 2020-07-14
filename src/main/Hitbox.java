@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 
 public class Hitbox {
 	public int width;
@@ -121,5 +122,8 @@ public class Hitbox {
 			bound1 = temp;
 		}
 		return (num >= bound1 && num <= bound2);
+	}
+	public Rectangle getBoundingRectangle () {
+		return new Rectangle (x, y, width, height);
 	}
 }

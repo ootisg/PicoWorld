@@ -48,18 +48,20 @@ public abstract class GuiComponent extends GameObject {
 	}
 	@Override
 	public void pauseEvent () {
-		if (focus) {
-			boolean[] charsOnFrame = MainLoop.getWindow ().keysPressedOnFrame;
-			for (int i = 0; i < charsOnFrame.length; i ++) {
-				if (charsOnFrame [i]) {
-					keyEvent ((char)i);
+		if (!isHidden ()) {
+			if (focus) {
+				boolean[] charsOnFrame = MainLoop.getWindow ().keysPressedOnFrame;
+				for (int i = 0; i < charsOnFrame.length; i ++) {
+					if (charsOnFrame [i]) {
+						keyEvent ((char)i);
+					}
+				}
+				if (mouseClicked ()) {
+					clickEvent (getMouseX (), getMouseY ());
 				}
 			}
-			if (mouseClicked ()) {
-				clickEvent (getMouseX (), getMouseY ());
-			}
+			guiFrame ();
 		}
-		guiFrame ();
 	}
 	@Override
 	public void draw () {

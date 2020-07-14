@@ -43,4 +43,10 @@ public class MappedUi extends GuiComponent {
 	public void renderGui () {
 		
 	}
+	public int getWidth () {
+		return map [0].length;
+	}
+	public int getHeight () {
+		return map.length;
+	}
 }

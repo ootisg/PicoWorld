@@ -101,6 +101,11 @@ public class Console {
 			this.disable ();
 			return;
 		}
+		if (command.equals ("-efa")) {
+			MainLoop.startFrameAdvance ();
+			this.disable ();
+			return;
+		}
 		String[] cmd = command.split (" ");
 		if (cmd.length == 1) {
 			if (cmd [0].equals ("-gettype")) {
@@ -213,7 +218,7 @@ public class Console {
 	}
 	public void render () {
 		//Renders the dev console; called by GameWindow.doPaint ()
-		Graphics g = window.getBuffer ();
+		Graphics g = window.getBufferGraphics ();
 		g.setColor (new Color (0));
 		g.fillRect (0, 0, 640, 480);
 		g.setColor (new Color (0xFFFFFF));

@@ -37,14 +37,18 @@ public abstract class Enemy extends GameObject implements Damageable, DamageSour
 			this.setX (this.getX () + knockbackX);
 			this.setY (this.getY () + knockbackY);
 			this.knockbackTime --;
-		} else {
+		} else if (knockbackX != 0 || knockbackY != 0) {
 			knockbackX = 0;
 			knockbackY = 0;
+			onKnockbackEnd ();
 		}
 		//System.out.println(this.knockbackTime);
 	}
 	public void attackEvent () {
 		getPlayer ().damageEvent (this);
+	}
+	public void onKnockbackEnd () {
+		
 	}
 	
 	@Override

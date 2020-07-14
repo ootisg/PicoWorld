@@ -10,6 +10,7 @@ public abstract class GameAPI {
 	private static final SpriteContainer sprites = new SpriteContainer (); //Makes the static instance of the sprite container object
 	private static final Gui gui = new Gui ();
 	private static final Player player = new Player ();
+	private static final SaveFile activeSave = new SaveFile ();
 	public boolean keyCheck (int keyCode) {
 		//Returns true if the key with an ASCII code of keyCode is pressed down
 		return MainLoop.getWindow ().keyCheck (keyCode);
@@ -72,5 +73,11 @@ public abstract class GameAPI {
 	}
 	public static Player getPlayer () {
 		return player;
+	}
+	public static GameWindow getWindow () {
+		return MainLoop.getWindow ();
+	}
+	public static SaveFile getSave () {
+		return activeSave;
 	}
 }

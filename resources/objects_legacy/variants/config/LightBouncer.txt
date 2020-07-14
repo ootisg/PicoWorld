@@ -1,0 +1,2 @@
+rotation;0,90,180,270:frame
+puzzleId:query

@@ -1,17 +1,21 @@
 package items;
 
+import gameObjects.DamageSource;
+import gameObjects.Damageable;
+import main.GameAPI;
 import resources.AnimationHandler;
 import resources.Sprite;
 import resources.Spritesheet;
 
-public abstract class GameItem {
+public abstract class GameItem implements Damageable {
 	private String name;
 	private String properties;
 	private Sprite icon;
 	protected AnimationHandler animationHandler;
 	private ItemType type;
+	private static boolean usePerciseCompare = false;
 	public static enum ItemType {
-		WEAPON, EQUIPMENT, CONSUMABLE, MATERIAL, SPELL;
+		WEAPON, EQUIPMENT, CONSUMABLE, MATERIAL, SPELL, OTHER;
 	}
 	private GameItem () {
 		animationHandler = new AnimationHandler (null);
@@ -142,10 +146,50 @@ public abstract class GameItem {
 	@Override
 	public boolean equals (Object o) {
 		if (o.getClass ().getName ().equals (this.getClass ().getName ())) {
-			if (this.type == ((GameItem)o).type && this.name.equals (((GameItem)o).getName ()) && this.properties.equals (((GameItem)o).getProperties ())) {
-				return true;
+			//TODO better solution to durability problem please!
+			if (this.type == ((GameItem)o).type && this.name.equals (((GameItem)o).getName ())) {
+				if (usePerciseCompare) {
+					if (this.properties.equals (((GameItem)o).getProperties ())) {
+						return true;
+					} else {
+						return false;
+					}
+				} else {
+					return true;
+				}
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public void damageEvent (DamageSource source) {
+		//Damage source could be the crafting menu used?
+		if (getHealth () <= 0) {
+			GameAPI.getGui ().getItemMenu ().removeItem (this);
+		}
+	}
+	
+	@Override
+	public void damage (double amount) {
+		if (!getProperty ("health").equals ("")) {
+			setProperty ("health", String.valueOf (Double.parseDouble (getProperty ("health")) - amount));
+		}
+		//TODO damage amount
+		damageEvent (null);
+	}
+	
+	@Override
+	public double getHealth () {
+		if (!getProperty ("health").equals ("")) {
+			return Double.parseDouble (getProperty ("health"));
+		} else {
+			return Double.NaN;
+		}
+	}
+	
+	@Override
+	public void setHealth (double health) {
+		setProperty ("health", String.valueOf (health));
 	}
 }

@@ -4,11 +4,13 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
+import gameObjects.GlobalSave;
 import main.GameObject;
 import main.GameWindow;
 import main.MainLoop;
 import main.TextInterface;
 import resources.Sprite;
+import resources.Spritesheet;
 
 public class Gui extends GameObject {
 	public int pauseCooldown;
@@ -16,6 +18,8 @@ public class Gui extends GameObject {
 	private ItemMenu itemMenu;
 	private CraftingMenu craftingMenu;
 	private StatsWindow statsWindow;
+	private Textbox tbox;
+	private MagicContainer magicContainer;
 	public Gui () {
 		this.declare (0, 0);
 		this.itemMenu = new ItemMenu (0, 0);
@@ -27,12 +31,21 @@ public class Gui extends GameObject {
 		itemMenu.focus ();
 		craftingMenu.setHidden (true);
 		this.setPersistent (true);
+		magicContainer = new MagicContainer ();
+		magicContainer.declare (494, 2);
+		//tbox = new Textbox (new Spritesheet ("resources/sprites/gui_background.png"), 8, 4, "HELLO HOW ARE YOU TODAY MY NAME IS DAT BOIIIIIIIIIIIIIIIII");
+		//tbox.declare (32, 128);
+		//tbox.setHidden (true);
 	}
 	public void frameEvent () {
 		pauseCooldown --;
 		if (keyPressed ('E') && pauseCooldown <= 0) {
 			MainLoop.pause ();
+			itemMenu.setHidden (false);
 			pauseCooldown = 10;
+		}
+		if (keyPressed ('\\')) {
+			getSave ().writeToFile ();
 		}
 	}
 	public void pauseEvent () {
@@ -63,5 +76,8 @@ public class Gui extends GameObject {
 	}
 	public ItemMenu getItemMenu () {
 		return itemMenu;
+	}
+	public MagicContainer getMagicContainer () {
+		return magicContainer;
 	}
 }

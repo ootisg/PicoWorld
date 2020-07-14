@@ -1,13 +1,15 @@
-package gameObjects;
+package puzzle;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import gameObjects.Saveable;
 import items.GameItem;
 import items.ItemDrop;
 import main.GameObject;
+import main.MainLoop;
 
-public class Puzzle extends GameObject {
+public class Puzzle extends Saveable {
 
 	private boolean isNew;
 	
@@ -33,26 +35,25 @@ public class Puzzle extends GameObject {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			int boundXOffset = Integer.parseInt (getVariantAttribute ("boundXOffset"));
-			int boundYOffset = Integer.parseInt (getVariantAttribute ("boundYOffset"));
-			int boundWidth = Integer.parseInt (getVariantAttribute ("boundWidth"));
-			int boundHeight = Integer.parseInt (getVariantAttribute ("boundHeight"));
-			createHitbox (boundXOffset, boundYOffset, boundWidth, boundHeight);
+			String puzzleId = this.getVariantAttribute ("id");
+			ArrayList<GameObject> loadedComponents = MainLoop.getObjectMatrix ().getAll (PuzzleComponent.class);
 			//Link puzzle components
 			switch (type) {
+				
 				case "block":
-					ArrayList<GameObject> blocks = getCollidingObjects ("gameObjects.RainbowBlock");
-					ArrayList<GameObject> targets = getCollidingObjects ("gameObjects.RainbowTarget");
-					for (int i = 0; i < blocks.size (); i ++) {
-						((RainbowBlock)(blocks.get (i))).addToPuzzle (this);
-					}
-					for (int i = 0; i < targets.size (); i ++) {
-						((RainbowTarget)(targets.get (i))).addToPuzzle (this);
-					}
 					renderComparator = new BlockPuzzleComparator ();
+				default:
+					for (int i = 0; i < loadedComponents.size (); i++) {
+						PuzzleComponent workingComp = (PuzzleComponent)loadedComponents.get (i);
+						String compId = workingComp.getVariantAttribute ("puzzleId");
+						if (compId != null && puzzleId.equals (compId)) {
+							workingComp.addToPuzzle (this);
+						}
+					}
 					break;
 			}
 			//Ensure the above code doesn't run twice
+			load ();
 			isNew = false;
 		}
 	}
@@ -79,10 +80,18 @@ public class Puzzle extends GameObject {
 	
 	public void doWin () {
 		new ItemDrop (reward).declare (getX (), getY ());
+		save ("solved");
 		forget ();
 	}
 	
 	public void remove (GameObject component) {
 		components.remove (component);
+	}
+	
+	@Override
+	public void load () {
+		if (("solved").equals (getSave ().getSaveData (getRoom ().getRoomName (), getSaveId ()))) {
+			forget ();
+		}
 	}
 }

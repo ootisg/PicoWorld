@@ -46,11 +46,24 @@ public interface ItemContainer {
 	 */
 	boolean removeSimilar (GameItem item);
 	/**
+	 * Replaces the first occurance of the given item from this container
+	 * @param oldItem the item to replace
+	 * @param newItem the new item to put in place of oldItem
+	 * @return true if the item is replaced successfully; false otherwise
+	 */
+	boolean replace (GameItem oldItem, GameItem newItem);
+	/**
 	 * Sets the item at the given index to the give item
 	 * @param index the index to set
 	 * @param item the item to set to the given index
 	 */
 	void setItem (int index, GameItem item);
+	/**
+	 * Finds the first occurance of a GameItem i, for which item.equals (i) evaluates to true, in this container
+	 * @param item the item to search for
+	 * @return the found item
+	 */
+	GameItem getSimilar (GameItem item);
 	/**
 	 * Returns the GameItem at the given index
 	 * @param index the index of the given item

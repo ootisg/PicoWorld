@@ -1,12 +1,14 @@
-package gameObjects;
+package puzzle;
 
 import java.util.ArrayList;
 
+import gameObjects.Interactable;
+import gameObjects.Player;
 import main.GameObject;
 import resources.Sprite;
 import resources.Spritesheet;
 
-public class RainbowBlock extends BlockPuzzleComponent {
+public class RainbowBlock extends BlockPuzzleComponent implements Interactable {
 	
 	private RainbowBlock link;
 	
@@ -60,45 +62,46 @@ public class RainbowBlock extends BlockPuzzleComponent {
 		}
 	}
 	
+	public void interact () {
+		RainbowBlock newBlock;
+		switch (getVariantAttribute ("color")) {
+			case "orange":
+				setVariantAttribute ("color", "red");
+				newBlock = new RainbowBlock ();
+				newBlock.addToPuzzle (puzzle);
+				link (newBlock);
+				newBlock.setVariantAttribute ("color", "yellow");
+				newBlock.declare (getX (), getY ());
+				newBlock.setVelocities (getPlayer ().getDirection ());
+				break;
+			case "green":
+				setVariantAttribute ("color", "yellow");
+				newBlock = new RainbowBlock ();
+				newBlock.addToPuzzle (puzzle);
+				link (newBlock);
+				newBlock.setVariantAttribute ("color", "blue");
+				newBlock.declare (getX (), getY ());
+				newBlock.setVelocities (getPlayer ().getDirection ());
+				break;
+			case "purple":
+				setVariantAttribute ("color", "red");
+				newBlock = new RainbowBlock ();
+				newBlock.addToPuzzle (puzzle);
+				link (newBlock);
+				newBlock.setVariantAttribute ("color", "blue");
+				newBlock.declare (getX (), getY ());
+				newBlock.setVelocities (getPlayer ().getDirection ());
+				break;
+			default:
+				break;
+		}
+	}
+	
 	@Override
 	public void frameEvent () {
 		setHidden (true);
 		if (isColliding (getPlayer ())) {
 			setVelocities (getPlayer ().getDirection ());
-		}
-		if (getPlayer ().swordObject.isColliding (this)) {
-			RainbowBlock newBlock;
-			switch (getVariantAttribute ("color")) {
-				case "orange":
-					setVariantAttribute ("color", "red");
-					newBlock = new RainbowBlock ();
-					newBlock.addToPuzzle (puzzle);
-					link (newBlock);
-					newBlock.setVariantAttribute ("color", "yellow");
-					newBlock.declare (getX (), getY ());
-					newBlock.setVelocities (getPlayer ().getDirection ());
-					break;
-				case "green":
-					setVariantAttribute ("color", "yellow");
-					newBlock = new RainbowBlock ();
-					newBlock.addToPuzzle (puzzle);
-					link (newBlock);
-					newBlock.setVariantAttribute ("color", "blue");
-					newBlock.declare (getX (), getY ());
-					newBlock.setVelocities (getPlayer ().getDirection ());
-					break;
-				case "purple":
-					setVariantAttribute ("color", "red");
-					newBlock = new RainbowBlock ();
-					newBlock.addToPuzzle (puzzle);
-					link (newBlock);
-					newBlock.setVariantAttribute ("color", "blue");
-					newBlock.declare (getX (), getY ());
-					newBlock.setVelocities (getPlayer ().getDirection ());
-					break;
-				default:
-					break;
-			}
 		}
 		setX (getX () + velocityX);
 		setY (getY () + velocityY);
@@ -107,8 +110,8 @@ public class RainbowBlock extends BlockPuzzleComponent {
 			velocityX = 0;
 			velocityY = 0;
 		}
-		if (isColliding ("gameObjects.RainbowBlock")) {
-			ArrayList<GameObject> objs = getCollidingObjects ("gameObjects.RainbowBlock");
+		if (isColliding ("puzzle.RainbowBlock")) {
+			ArrayList<GameObject> objs = getCollidingObjects ("puzzle.RainbowBlock");
 			if (!(objs.size () == 1 && isLinkedTo ((RainbowBlock)objs.get (0)))) {
 				if (Math.abs (getColorId () - ((RainbowBlock)(objs.get (0))).getColorId ()) == 1) {
 					if (objs.get (0).getX () == getX () && objs.get (0).getY () == getY ()) {

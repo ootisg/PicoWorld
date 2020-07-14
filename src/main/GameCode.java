@@ -4,37 +4,56 @@ import java.awt.Color;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import ai.PathDisplayer;
+import ai.Pathfinder;
+import gameObjects.AnimationTester;
 import gameObjects.FlameElemental;
 import gameObjects.FrostElemental;
+import gameObjects.GlobalSave;
+import gameObjects.InfusionAltar;
+import gameObjects.Isopod;
+import gameObjects.MagicDrop;
+import gameObjects.MagicSlime;
+import gameObjects.MapStructure;
 import gameObjects.Particle;
 import gameObjects.Player;
 import gameObjects.Saveable;
+import gameObjects.SmallCollider;
 import gameObjects.TestEnemy;
+import gameObjects.Tree;
 import items.*;
 import projectiles.PlayerMagic;
+import puzzle.LightFocuser;
+import puzzle.LightSwitch;
+import resources.Sprite;
+import resources.Spritesheet;
 
 public class GameCode extends GameAPI {
 	private GameWindow gameWindow;
 	public void initialize () {
-		//Runs on initialization
-		//MainLoop.getWindow ().setResolution (480, 480);
-		try {
-			Saveable.loadData ("saves/save.txt");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//System.out.println ("HIA");
+		//Set the save file path
+		getSave ().setFile ("saves/save.txt");
+		//Create the global save data
+		new GlobalSave ().declare (0, 0);
+		//Load the starting room
 		try {
 			getRoom ().loadRoom ("resources/maps/testmap3.cmf");
+			//getRoom ().loadRoom ("resources/maps/testermap.rmf");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//Declare the player
 		getPlayer ().declare (256, 32);
-		new TestEnemy ().declare (128, 32);
-		new FlameElemental ().declare (32, 32);
-		//new ItemDrop (new GoldSword ()).declare (128, 128);
+		//new InfusionAltar ().declare (32, 32);
+		//Create enemies (TODO)
+		//new TestEnemy ().declare (128, 160);
+		//new FlameElemental ().declare (32, 32);
+		//new Isopod ().declare (128, 64);
+		//new MagicDrop (new MagicGem ()).declare (32, 48);
+		new MagicSlime ().declare (32, 64);
+		new LightFocuser ().declare (16, 16);
+		new ItemDrop (new LightBoltSpell ()).declare (32, 16);
 		/*for (int i = 0; i < 576; i ++) {
 		 //MAKES APPLES
 			for (int j = 0; j < 576; j ++) {
@@ -56,7 +75,6 @@ public class GameCode extends GameAPI {
 		MainLoop.getWindow ().setSize (1024, 576);
 	}
 	public void gameLoop () {
-		getRoom ().frameEvent ();
 		//Saveable.printSaves ();
 		//Runs once per frame
 	}

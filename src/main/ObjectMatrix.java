@@ -1,5 +1,7 @@
 package main;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -7,6 +9,7 @@ public class ObjectMatrix {
 	public ArrayList<ArrayList<GameObject>> objectMatrix;
 	public ArrayList<String> classNameList;
 	public Class testClass;
+	public static ArrayList<String> checkPackages;
 	public long objectCount;
 	public ObjectMatrix () {
 		objectMatrix = new ArrayList<ArrayList<GameObject>> ();
@@ -79,10 +82,13 @@ public class ObjectMatrix {
 				} else {
 					objects.get (i).frameEvent ();
 				}
-				if (objects.get (i).isDeclared ()) {
-					if (!objects.get (i).isHidden ()) {
-						objects.get (i).draw ();
-					}
+			}
+		}
+		GameAPI.getRoom ().frameEvent ();
+		for (int i = 0; i < objects.size (); i ++) {
+			if (objects.get (i).isDeclared ()) {
+				if (!objects.get (i).isHidden ()) {
+					objects.get (i).draw ();
 				}
 			}
 		}
@@ -156,5 +162,29 @@ public class ObjectMatrix {
 	public String getStringId (int objectId) {
 		//Gets the string id associated with the x-coordinate objectId on the object matrix
 		return classNameList.get (objectId);
+	}
+	public static void initPackages () {
+		checkPackages = new ArrayList<String> ();
+		checkPackages.add ("gameObjects");
+		checkPackages.add ("puzzle");
+		checkPackages.add ("items");
+	}
+	public static GameObject makeInstance (String objectType) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class<?> objClass = null;
+		for (int i = 0; i < checkPackages.size (); i++) {
+			try {
+				objClass = Class.forName (checkPackages.get (i) + "." + objectType);
+				break;
+			} catch (ClassNotFoundException e) {
+				//Do nothing
+			}
+		}
+		if (objClass == null) {
+			throw new ClassNotFoundException ();
+		} else {
+			Constructor<?> objConstructor = objClass.getConstructors ()[0];
+			GameObject obj = (GameObject)objConstructor.newInstance ();
+			return obj;
+		}
 	}
 }

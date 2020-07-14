@@ -108,7 +108,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	public void setSprite (Sprite sprite) {
 		//Sets this GameObject's Sprite to the given Sprite
 		this.sprite = sprite;
-		if (sprite.getIsAnimated ()) {
+		if (sprite != null && sprite.getIsAnimated ()) {
 			animationHandler.setSprite (sprite);
 			animationEnabled = true;
 		} else {

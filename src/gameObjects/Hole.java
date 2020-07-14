@@ -27,7 +27,7 @@ public class Hole extends GameObject {
 				}
 				ArrayList<GameObject> ladders = MainLoop.getObjectMatrix ().getObjects ("gameObjects.Ladder");
 				for (int i = 0; i < ladders.size (); i ++) {
-					if (ladders.get (i).getVariantAttribute ("id").equals (getVariantAttribute ("id"))) {
+					if (ladders.get (i) != null && ladders.get (i).getVariantAttribute ("id").equals (getVariantAttribute ("id"))) {
 						Ladder workingLadder = (Ladder)ladders.get (i);
 						workingLadder.deactivate ();
 						getPlayer ().setX (workingLadder.getX () + Double.parseDouble (workingLadder.getVariantAttribute ("xoffset")));

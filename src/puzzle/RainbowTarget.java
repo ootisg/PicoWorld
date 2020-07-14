@@ -1,4 +1,4 @@
-package gameObjects;
+package puzzle;
 
 import java.util.ArrayList;
 
@@ -36,7 +36,7 @@ public class RainbowTarget extends BlockPuzzleComponent {
 	
 	@Override
 	public void frameEvent () {
-		ArrayList<GameObject> objs = getCollidingObjects ("gameObjects.RainbowBlock");
+		ArrayList<GameObject> objs = getCollidingObjects ("puzzle.RainbowBlock");
 		for (int i = 0; i < objs.size (); i ++) {
 			if (objs.get (i).getX () == getX () && objs.get (i).getY () == getY () && getVariantAttribute ("color").equals (objs.get (i).getVariantAttribute ("color"))) {
 				puzzle.doWin ();

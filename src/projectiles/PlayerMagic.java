@@ -18,9 +18,14 @@ public class PlayerMagic extends PlayerProjectile {
 		setVelocityY (speed * Math.sin (direction));
 		createHitbox (1, 1, 14, 14);
 	}
+
+	@Override
+	public double getBaseDamage () {
+		return Double.POSITIVE_INFINITY;
+	}
 	
 	@Override
-	public void draw () {
+	public void projectileFrame () {
 		int baseRed = 0x66;
 		int baseGreen = 0x10;
 		int baseBlue = 0x1D;
@@ -42,15 +47,6 @@ public class PlayerMagic extends PlayerProjectile {
 				new Particle (particleX, particleY, used, particleSize, particleDurability, particleDirection, particleSpeed, particleDecayProbability);
 			}
 		}
-	}
-
-	@Override
-	public double getBaseDamage () {
-		return Double.POSITIVE_INFINITY;
-	}
-	
-	@Override
-	public void projectileFrame () {
 		if (getRoom ().isColliding (getHitbox ())) {
 			forget ();
 		}

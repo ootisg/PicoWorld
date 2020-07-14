@@ -28,8 +28,12 @@ import java.net.URL;
 public class GameWindow extends JFrame {
 	Clip clip;
 	public boolean[] keysPressed;
+	public boolean[] keysPressedCache;
 	public boolean[] keysPressedOnFrame;
+	public boolean[] keysPressedOnFrameCache;
 	public boolean[] keysReleasedOnFrame;
+	public boolean[] keysReleasedOnFrameCache;
+	public boolean cacheMode;
 	ExtendedMouseListener mouseListener;
 	ExtendedMouseMotionListener motionListener;
 	BufferedImage bufferImage;
@@ -38,6 +42,7 @@ public class GameWindow extends JFrame {
 	WritableRaster bufferRaster;
 	Graphics bufferGraphics;
 	Insets insets;
+	GameWindow self;
 	int numtest = 0;
 	int rasterMode = 0;
 	int[] resolution = {640, 480};
@@ -55,6 +60,9 @@ public class GameWindow extends JFrame {
 		keysPressed = new boolean[256]; //Array for tracking which keys are down
 		keysPressedOnFrame = new boolean[256]; //Array for tracking which keys have just been pressed
 		keysReleasedOnFrame = new boolean[256]; //Array for tracking which keys have just been released
+		keysPressedCache = new boolean[256]; //Cache array for tracking which keys are down
+		keysPressedOnFrameCache = new boolean[256]; //Cache array for tracking which keys have just been pressed
+		keysReleasedOnFrameCache = new boolean[256]; //Cache array for tracking which keys have just been released
 		bufferGraphics = bufferImage.getGraphics (); //Get a graphics interface for bufferedimage
 		bufferRaster = rasterImage.getRaster ();
 		try {
@@ -100,12 +108,35 @@ public class GameWindow extends JFrame {
 		motionListener = new ExtendedMouseMotionListener (insets.left, insets.top); //Makes a mouse motion listener
 		this.addMouseListener (mouseListener);
 		this.addMouseMotionListener (motionListener);
+		self = this;
 		//This section handles keystroke detection
 		KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();
 		keyboardFocusManager.addKeyEventDispatcher (new KeyEventDispatcher () {
 			@Override
 			public boolean dispatchKeyEvent (KeyEvent e) {
+				boolean[] keysPressed;
+				boolean[] keysPressedOnFrame;
+				boolean[] keysReleasedOnFrame;
+				if (cacheMode) {
+					keysPressed = keysPressedCache;
+					keysPressedOnFrame = keysPressedOnFrameCache;
+					keysReleasedOnFrame = keysReleasedOnFrameCache;
+				} else {
+					keysPressed = self.keysPressed;
+					keysPressedOnFrame = self.keysPressedOnFrame;
+					keysReleasedOnFrame = self.keysReleasedOnFrame;
+				}
 				if (e.getID () == KeyEvent.KEY_PRESSED) {
+
+					if (MainLoop.freezeFrame) {
+						if (e.getKeyCode () == (int)(',')) {
+							MainLoop.advanceFrame ();
+						}
+						if (e.getKeyCode () == (int)('.')) {
+							MainLoop.freezeFrame = false;
+							MainLoop.advanceFrame ();
+						}
+					}
 					if (e.getKeyCode () <= 255) {
 						keysPressed [e.getKeyCode ()] = true;
 						keysPressedOnFrame [e.getKeyCode ()] = true;
@@ -217,7 +248,7 @@ public class GameWindow extends JFrame {
 			return false;
 		}
 	}
-	public Graphics getBuffer () {
+	public Graphics getBufferGraphics () {
 		return bufferGraphics;
 	}
 	public int[] getResolution () {
@@ -246,5 +277,23 @@ public class GameWindow extends JFrame {
 	}
 	public int[] getImageData () {
 		return imageData;
+	}
+	public void inputCacheMode (boolean mode) {
+		if (mode && !cacheMode) {
+			cacheMode = true;
+			for (int i = 0; i < keysPressed.length; i ++) {
+				keysPressedCache [i] = keysPressed [i];
+			}
+		} else if (!mode && cacheMode) {
+			for (int i = 0; i < keysPressed.length; i ++) {
+				keysPressed [i] = keysPressedCache [i];
+				keysPressedOnFrame [i] = keysPressedOnFrameCache [i];
+				keysReleasedOnFrame [i] = keysReleasedOnFrameCache [i];
+				keysPressedCache [i] = false;
+				keysPressedOnFrameCache [i] = false;
+				keysReleasedOnFrameCache [i] = false;
+			}
+		}
+		cacheMode = mode;
 	}
 }

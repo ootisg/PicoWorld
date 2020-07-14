@@ -1,19 +1,25 @@
 package gameObjects;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import ai.Pathfinder;
 import gui.StatusBar;
 import items.GameItem;
 import main.GameObject;
 import main.MainLoop;
 import projectiles.PlayerMagic;
+import projectiles.Projectile;
 import resources.Sprite;
 import resources.Spritesheet;
+import spriteParsers.JigsawFilter;
+import spriteParsers.PixelParser;
 
 public class Player extends GameObject implements Damageable {
 	double health = 0;
@@ -23,6 +29,7 @@ public class Player extends GameObject implements Damageable {
 	int direction = 0;
 	int attackDamage = 0;
 	double speed = 3;
+	double attackSpeed = 2;
 	int animation;
 	int animationFrame;
 	int invulTime = 0;
@@ -34,8 +41,9 @@ public class Player extends GameObject implements Damageable {
 	public static final int DIRECTION_LEFT = 1;
 	public static final int DIRECTION_DOWN = 2;
 	public static final int DIRECTION_RIGHT = 3;
-	public static final double[] RADIAN_DIRECTION_MAP = new double[] {Math.PI * 3 / 2, Math.PI, Math.PI / 2, 0};
+	public static final double[] RADIAN_DIRECTION_MAP = new double[] {Projectile.DIRECTION_UP, Projectile.DIRECTION_LEFT, Projectile.DIRECTION_DOWN, Projectile.DIRECTION_RIGHT};
 	private static final int[] WEAPON_OFFSETS = new int[] {0, -4, -4, 0, 0, 0, 0, 0};
+	private static ArrayList<Point> weaponOffsets;
 	private static StatusBar healthBar;
 	private static StatusBar manaBar;
 	private static LinkedList<StatusBar> statusBars;
@@ -43,11 +51,12 @@ public class Player extends GameObject implements Damageable {
 	Sprite armSprite;
 	Sword swordObject;
 	Sprite[] swordSprites;
+	SmallCollider sc;
 	public Player () {
 		this.setSprite (getSprites ().playerIdle);
 		this.armSprite = getSprites ().playerArmsIdle;
 		this.getAnimationHandler ().setAnimationSpeed (0);
-		this.createHitbox (0, 0, 16, 16);
+		this.createHitbox (4, 1, 8, 14);
 		this.animation = 0;
 		this.animationFrame = 0;
 		this.particleColor = new Color (0xFFFFFF);
@@ -121,18 +130,40 @@ public class Player extends GameObject implements Damageable {
 				this.getAnimationHandler ().setAnimationSpeed (0);
 			}
 			if (keyPressed (0x20)) {
-				if (magicSelected) {
-					GameItem equippedSpell = getGui ().getItemMenu ().getEquippedSpell ();
-					if (equippedSpell != null) {
-						equippedSpell.use ();
-					}
-				} else {
-					if (!swinging) {
-						GameItem equippedWeapon = getGui ().getItemMenu ().getEquippedWeapon ();
-						if (equippedWeapon != null) {
-							equippedWeapon.use ();
+				int checkX = (int)getX () + 7;
+				int checkY = (int)getY () + 7;
+				switch (direction) {
+					case DIRECTION_UP:
+						checkY -= 16;
+						break;
+					case DIRECTION_LEFT:
+						checkX -= 16;
+						break;
+					case DIRECTION_DOWN:
+						checkY += 16;
+						break;
+					case DIRECTION_RIGHT:
+						checkX += 16;
+						break;
+				}
+				sc = new SmallCollider (Interactable.class, checkX, checkY);
+				Interactable interactedObject = sc.collide ();
+				if (interactedObject == null) {
+					if (magicSelected) {
+						GameItem equippedSpell = getGui ().getItemMenu ().getEquippedSpell ();
+						if (equippedSpell != null) {
+							equippedSpell.use ();
+						}
+					} else {
+						if (!swinging) {
+							GameItem equippedWeapon = getGui ().getItemMenu ().getEquippedWeapon ();
+							if (equippedWeapon != null) {
+								equippedWeapon.use ();
+							}
 						}
 					}
+				} else {
+					interactedObject.interact ();
 				}
 			}
 			double x = this.getX ();
@@ -176,26 +207,26 @@ public class Player extends GameObject implements Damageable {
 				this.getAnimationHandler ().animate ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY (), false, false);
 				this.armSprite.draw ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY ());
 			} else {
-				this.armSprite.setFrame (animationFrame / 3);
+				this.armSprite.setFrame ((int)(animationFrame / attackSpeed));
 				swordObject.setSprite (swordSprites [direction]);
-				swordObject.getAnimationHandler ().setFrame (animationFrame / 3);
+				swordObject.getAnimationHandler ().setFrame ((int)(animationFrame / attackSpeed));
 				if (direction != DIRECTION_UP) {
 					this.getAnimationHandler ().animate ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY (), false, false);
 					this.armSprite.draw ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY ());
 					//swordSprites [direction].draw ((int)this.getX () + WEAPON_OFFSETS [direction * 2], (int)this.getY () + WEAPON_OFFSETS [direction * 2 + 1]);
-					swordObject.setX ((int)this.getX () + WEAPON_OFFSETS [direction * 2]);
-					swordObject.setY ((int)this.getY () + WEAPON_OFFSETS [direction * 2 + 1]);
+					swordObject.setX ((int)this.getX () + weaponOffsets.get (direction * 3 + swordObject.getAnimationHandler ().getFrame ()).x);
+					swordObject.setY ((int)this.getY () + weaponOffsets.get (direction * 3 + swordObject.getAnimationHandler ().getFrame ()).y);
 					swordObject.getAnimationHandler ().animate ((int)swordObject.getX () - getRoom ().getViewX (), (int)swordObject.getY () - getRoom ().getViewY (), false, false);
 				} else {
 					//swordSprites [direction].draw ((int)this.getX () + WEAPON_OFFSETS [direction * 2], (int)this.getY () + WEAPON_OFFSETS [direction * 2 + 1]);
-					swordObject.setX ((int)this.getX () + WEAPON_OFFSETS [direction * 2]);
-					swordObject.setY ((int)this.getY () + WEAPON_OFFSETS [direction * 2 + 1]);
+					swordObject.setX ((int)this.getX () + weaponOffsets.get (direction * 3 + swordObject.getAnimationHandler ().getFrame ()).x);
+					swordObject.setY ((int)this.getY () + weaponOffsets.get (direction * 3 + swordObject.getAnimationHandler ().getFrame ()).y);
 					swordObject.getAnimationHandler ().animate ((int)swordObject.getX () - getRoom ().getViewX (), (int)swordObject.getY () - getRoom ().getViewY (), false, false);
 					this.armSprite.draw ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY ());
 					this.getAnimationHandler ().animate ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY (), false, false);
 				}
 				animationFrame ++;
-				if (animationFrame == 9) {
+				if (animationFrame >= (int)(attackSpeed * 3)) {
 					animationFrame = 0;
 					swinging = false;
 					swordObject.setPosition (-32, -32);
@@ -230,11 +261,16 @@ public class Player extends GameObject implements Damageable {
 	public void useSword (GameItem weapon) {
 		Spritesheet sheet = new Spritesheet ("resources/sprites/" + weapon.getName () + "Sheet.png");
 		swordSprites = new Sprite[] {
-				new Sprite (sheet, new int[] {0, 20, 40}, new int[] {0, 0, 0}, 20, 20),
-				new Sprite (sheet, new int[] {0, 20, 40}, new int[] {20, 20, 20}, 20, 20),
-				new Sprite (sheet, new int[] {0, 20, 40}, new int[] {40, 40, 40}, 20, 20),
-				new Sprite (sheet, new int[] {0, 20, 40}, new int[] {60, 60, 60}, 20, 20)
+				new Sprite (sheet, new int[] {0, 16, 32}, new int[] {0, 0, 0}, 16, 16),
+				new Sprite (sheet, new int[] {0, 16, 32}, new int[] {16, 16, 16}, 16, 16),
+				new Sprite (sheet, new int[] {0, 16, 32}, new int[] {32, 32, 32}, 16, 16),
+				new Sprite (sheet, new int[] {0, 16, 32}, new int[] {48, 48, 48}, 16, 16)
 		};
+		sheet = new Spritesheet ("resources/sprites/gold_sword_sheet_meta.png");
+		Sprite swordMeta = new Sprite (sheet, 16, 16);
+		sheet = new Spritesheet ("resources/sprites/sword_arm_meta.png");
+		Sprite armMeta = new Sprite (sheet, 16, 16);
+		weaponOffsets = JigsawFilter.filter (PixelParser.parse (swordMeta), PixelParser.parse (armMeta), 0x0000FF);
 		swordObject.setSwordUsed (weapon);
 		this.setSprite (getSprites ().playerIdle);
 		this.armSprite = getSprites ().swordArmSprites [direction];
@@ -248,7 +284,7 @@ public class Player extends GameObject implements Damageable {
 			((RainbowBlock)(getCollidingObjects ("gameObjects.RainbowBlock").get (0))).setVelocities (getDirection ());
 			return true;
 		}*/
-		if (getRoom ().isColliding (getHitbox ()) || isColliding ("gameObjects.Tree")) {
+		if (getRoom ().isColliding (getHitbox ()) || isColliding ("gameObjects.Tree") || isColliding ("gameObjects.BerryBush") || isColliding ("gameObjects.InfusionAltar")) {
 			return true;
 		}
 		return false;

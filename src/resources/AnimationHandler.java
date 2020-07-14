@@ -9,6 +9,8 @@ public class AnimationHandler {
 	private double animationSpeed = 0.25;
 	private boolean enabled = true;
 	private boolean ignorePause = false;
+	private boolean repeat = true;
+	private boolean done = false;
 	public AnimationHandler (Sprite sprite) {
 		this.sprite = sprite;
 	}
@@ -21,7 +23,12 @@ public class AnimationHandler {
 				animationTime = 0;
 			}
 			if (frame > sprite.getFrameCount () - 1) {
-				frame = 0;
+				if (repeat) {
+					frame = 0;
+				} else {
+					frame = sprite.getFrameCount () - 1;
+					done = true;
+				}
 			}
 			animationTime ++;
 		}
@@ -44,10 +51,19 @@ public class AnimationHandler {
 	public int getFrame () {
 		return this.frame;
 	}
+	public boolean repeats () {
+		return repeat;
+	}
+	public void setRepeat (boolean doRepeat) {
+		this.repeat = doRepeat;
+	}
 	public void setIgnorePause (boolean ignorePause) {
 		this.ignorePause = ignorePause;
 	}
 	public boolean ignoresPause () {
 		return ignorePause;
+	}
+	public boolean isDone () {
+		return done;
 	}
 }

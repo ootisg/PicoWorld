@@ -48,7 +48,7 @@ public class Particle extends GameObject {
 	}
 	@Override
 	public void draw () {
-		MainLoop.getWindow ().getBuffer ().setColor (this.color);
-		MainLoop.getWindow ().getBuffer ().fillRect ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY (), size, size);
+		MainLoop.getWindow ().getBufferGraphics ().setColor (this.color);
+		MainLoop.getWindow ().getBufferGraphics ().fillRect ((int)this.getX () - getRoom ().getViewX (), (int)this.getY () - getRoom ().getViewY (), size, size);
 	}
 }

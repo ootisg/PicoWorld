@@ -1,4 +1,4 @@
-package gameObjects;
+package puzzle;
 
 public class BlockPuzzleComponent extends PuzzleComponent {
 	
@@ -19,6 +19,7 @@ public class BlockPuzzleComponent extends PuzzleComponent {
 		}
 	}
 	
+	@Override
 	public void addToPuzzle (Puzzle puzzle) {
 		puzzle.add (this);
 		this.puzzle = puzzle;

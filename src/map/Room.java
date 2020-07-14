@@ -2,22 +2,30 @@ package map;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import gameObjects.GameObjectLoader;
 import main.GameWindow;
 import main.GameAPI;
 import main.GameObject;
 import main.Hitbox;
 import main.MainLoop;
+import main.ObjectMatrix;
 import resources.Sprite;
 import resources.Spritesheet;
 
 public class Room {
+	
+	public static final int MAX_COLLISION_STEPS = 1000;
+	
 	private String roomName;
 	private Sprite[] tileList;
 	private String[] tileIdList;
@@ -34,6 +42,7 @@ public class Room {
 	private static double[] hitboxCorners = new double[] {0, 0, 1, 0, 1, 1, 0, 1, 0, 0};
 	private TileAttributesList tileAttributesList;
 	private ArrayList<Background> backgroundList;
+	private HashMap<String, MapUnit> mapUnits;
 	public TileBuffer tileBuffer = new TileBuffer ();
 	public Room () {
 		//A fairly generic constructor
@@ -45,6 +54,7 @@ public class Room {
 		viewY = 0;
 		readBit = 0;
 		backgroundList = new ArrayList<Background> ();
+		mapUnits = new HashMap<String, MapUnit> ();
 	}
 	private int readBits (int num) {
 		//Reads a number of bits from the byte[] inData equal to num and returns them as an int
@@ -65,6 +75,32 @@ public class Room {
 			}
 		}
 		return result;
+	}
+	public char readChar () {
+		return (char)readBits (8);
+	}
+	public String readChars (int numChars) {
+		String out = "";
+		for (int i = 0; i < numChars; i++) {
+			out += readChar ();
+		}
+		return out;
+	}
+	public int readInt () {
+		return readBits (32);
+	}
+	public String readTo (char c) {
+		char current;
+		String out = "";
+		while (true) {
+			current = readChar ();
+			if (current != c) {
+				out += current;
+			} else {
+				break;
+			}
+		}
+		return out;
 	}
 	public boolean isColliding (double x1, double y1, double x2, double y2) {
 		if (getCollidingCoords (x1, y1, x2, y2) != null) {
@@ -95,8 +131,10 @@ public class Room {
 		if (collisionData [getTileId ((int) x1 / 16, (int) y1 / 16)]) {
 			return new double[] {x1, y1};
 		}
+		int steps;
 		if (x1 == x2) {
-			while (true) {
+			steps = 0;
+			while (steps < MAX_COLLISION_STEPS) {
 				tileYOffset = 0;
 				ystep = snap16 (ystep, ydir);
 				if (ydir == -1 && ystep % 16 == 0) {
@@ -108,11 +146,13 @@ public class Room {
 				if (collisionData [getTileId ((int) x1 / 16, (int) ystep / 16 + tileYOffset)]) {
 					return new double[] {x1, ystep};
 				}
+				steps ++;
 			}
 		}
 
 		if (y1 == y2) {
-			while (true) {
+			steps = 0;
+			while (steps < MAX_COLLISION_STEPS) {
 				tileXOffset = 0;
 				xstep = snap16 (xstep, xdir);
 				if (xdir == -1 && xstep % 16 == 0) {
@@ -124,11 +164,13 @@ public class Room {
 				if (collisionData [getTileId ((int) x1 / 16 + tileXOffset, (int) ystep / 16)]) {
 					return new double[] {xstep, y1};
 				}
+				steps ++;
 			}
 		}
 		double m = (y1 - y2) / (x1 - x2);
 		double b = y1 - m * x1;
-		while (true) {
+		steps = 0;
+		while (steps < MAX_COLLISION_STEPS) {
 			tileXOffset = 0;
 			tileYOffset = 0;
 			xcheck1 = snap16 (xstep, xdir);
@@ -157,7 +199,9 @@ public class Room {
 			if (collisionData [getTileId ((int) xstep / 16 + tileXOffset, (int) ystep / 16 + tileYOffset)]) {
 				return new double[] {xstep, ystep};
 			}
+			steps ++;
 		}
+		return null;
 	}
 	public void setTileBuffer (double x1, double y1, double x2, double y2) {
 		int xdir = 1;
@@ -202,8 +246,10 @@ public class Room {
 			tileBuffer.spriteUsed = tileList [getTileId ((int) x1 / 16, (int) y1 / 16)];
 			return;
 		}*/
+		int steps;
 		if (x1 == x2) {
-			while (true) {
+			steps = 0;
+			while (steps < MAX_COLLISION_STEPS) {
 				tileYOffset = 0;
 				ystep = snap16 (ystep, ydir);
 				if (ydir == -1 && ystep % 16 == 0) {
@@ -247,13 +293,15 @@ public class Room {
 						return;
 					}
 				}
+				steps ++;
 			}
 		}
 		/*System.out.print (y1);
 		System.out.print (", ");
 		System.out.println (y2);*/
 		if (y1 == y2) {
-			while (true) {
+			steps = 0;
+			while (steps < MAX_COLLISION_STEPS) {
 				tileXOffset = 0;
 				xstep = snap16 (xstep, xdir);
 				if (xdir == -1 && xstep % 16 == 0) {
@@ -294,11 +342,13 @@ public class Room {
 						return;
 					}
 				}
+				steps ++;
 			}
 		}
 		double m = (y1 - y2) / (x1 - x2);
 		double b = y1 - m * x1;
-		while (true) {
+		steps = 0;
+		while (steps < MAX_COLLISION_STEPS) {
 			tileXOffset = 0;
 			tileYOffset = 0;
 			xcheck1 = snap16 (xstep, xdir);
@@ -341,7 +391,33 @@ public class Room {
 				tileBuffer.mapTile.y = (int) ystep / 16 + tileYOffset;
 				return;
 			}
+			steps ++;
 		}
+	}
+	public MapTile[][] getTiles (int x, int y, int width, int height) {
+		MapTile[][] result = new MapTile[height][width];
+		//wx is working x; wy is working y
+		for (int wy = 0; wy < height; wy ++) {
+			for (int wx = 0; wx < width; wx ++) {
+				result [wx][wy] = new MapTile (getTileIdString (x + wx, y + wy), x + wx, y + wy);
+			}
+		}
+		return result;
+	}
+	public short[][][] getTileIds (int x, int y, int width, int height) {
+		short[][][] result = new short[tileData.length][width][height];
+		//wx is working x; wy is working y
+		for (int layer = 0; layer < tileData.length; layer ++) {
+			for (int wy = 0; wy < height; wy ++) {
+				for (int wx = 0; wx < width; wx ++) {
+					result [layer][wx][wy] = tileData [layer][x + wx][y + wy];
+				}
+			}
+		}
+		return result;
+	}
+	public boolean[][] filter (int x, int y, int width, int height, String filter) {
+		return null;
 	}
 	public double snap16 (double num, int direction) {
 		if (num % 16 == 0) {
@@ -493,9 +569,9 @@ public class Room {
 			this.tileBuffer.mapTile.y = collidingTiles [closestTile].y;
 			this.tileBuffer.mapTile.tileId = collidingTiles [closestTile].tileId;
 			this.tileBuffer.spriteUsed = null; //Because I'm lazy
-			MainLoop.getWindow ().getBuffer ().setColor (new Color(0xFF0000));
-			MainLoop.getWindow ().getBuffer ().fillRect ((int)tileBuffer.collisionX, (int)tileBuffer.collisionY, 2, 2);
-			MainLoop.getWindow ().getBuffer ().setColor (new Color(0x000000));
+			MainLoop.getWindow ().getBufferGraphics ().setColor (new Color(0xFF0000));
+			MainLoop.getWindow ().getBufferGraphics ().fillRect ((int)tileBuffer.collisionX, (int)tileBuffer.collisionY, 2, 2);
+			MainLoop.getWindow ().getBufferGraphics ().setColor (new Color(0x000000));
 			return collisionData [closestTile];
 			//Returns true for a successful collision
 		} else {
@@ -543,6 +619,15 @@ public class Room {
 		//Returns the numerical tile ID at x, y
 		return tileData [0][x][y];
 	}
+	public short getNumericalId (String tileId) {
+		//Returns the numerical ID associated with the tile tileId; returns -1 if no ID is found
+		for (int i = 0; i < tileIdList.length; i ++) {
+			if (tileIdList [i].equals (tileId)) {
+				return (short)i;
+			}
+		}
+		return -1;
+	}
 	public boolean isSolid (int x, int y) {
 		//Returns true if the tile at x, y is solid
 		return collisionData[tileData [0][x][y]];
@@ -551,22 +636,217 @@ public class Room {
 		//Returns the string tile ID at x, y
 		return tileIdList [tileData [0][x][y]];
 	}
+	public String getTileIdString (int x, int y, int layer) {
+		return tileIdList [tileData [layer][x][y]];
+	}
+	public boolean setTile (int x, int y, String id) {
+		return setTile (0, x, y, id);
+	}
+	public boolean setTile (int layer, int x, int y, String id) {
+		for (short i = 0; i < tileIdList.length; i ++) {
+			if (tileIdList [i].equals (id)) {
+				tileData [layer][x][y] = i;
+				return true;
+			}
+		}
+		return false;
+	}
+	public void setTile (int layer, int x, int y, short id) {
+		tileData [layer][x][y] = id;
+	}
+	public void addMapUnit (MapUnit unit) {
+		mapUnits.put (unit.getName (), unit);
+	}
 	public void frameEvent () {
 		//Renders the room
 		int windowWidth = MainLoop.getWindow ().getResolution ()[0];
 		int windowHeight = MainLoop.getWindow ().getResolution()[1];
-		for (int i = 0; i < backgroundList.size (); i ++) {
-			backgroundList.get (i).draw (viewX, viewY);
-		}
 		for (int layer = tileData.length - 1; layer >= 0; layer --) {
-			for (int i = -(viewX % 16); i < windowWidth && i < levelWidth * 16; i += 16) {
-				for (int j = (-viewY % 16); j < windowHeight && j < levelHeight * 16; j += 16) {
-					tileList [tileData [layer][(viewX + i) / 16][(viewY + j) / 16]].draw (i, j);
+			if (backgroundList.size () != 0 && backgroundList.get (layer) != null) {
+				backgroundList.get (layer).draw (viewX, viewY);
+			} else {
+				for (int i = -(viewX % 16); i < windowWidth && i < levelWidth * 16; i += 16) {
+					for (int j = (-viewY % 16); j < windowHeight && j < levelHeight * 16; j += 16) {
+						Sprite currTile = tileList [tileData [layer][(viewX + i) / 16][(viewY + j) / 16]];
+						if (currTile != null) {
+							currTile.draw (i, j);
+						}
+					}
 				}
 			}
 		}
 	}
 	public void loadRoom (String path) throws FileNotFoundException {
+		loadCMF (path);
+		return;
+	}
+	public void loadRMF (String path) throws FileNotFoundException {
+		//START OF HEADER
+		//Bytes 0-3: RMF# (# is version number)
+		//Bytes 4-7: Map width, in tiles
+		//Bytes 8-11: Map height, in tiles
+		//Bytes 12-15: Number of layers
+		//Bytes 16-19: Number of objects (placed)
+		//END OF HEADER
+		//Tileset list (background layers are excluded)
+		//Object import list
+		//Background list
+		//Tiles
+		//Object list (x, y, id, variant)
+		
+		//This section is copy-pasted from the CMF loading code
+		String previousName = roomName;
+		roomName = path;
+		try {
+			//Purges the gameObjects
+			ArrayList<ArrayList<GameObject>> objList = MainLoop.getObjectMatrix ().objectMatrix;
+			for (int i = 0; i < objList.size (); i ++) {
+				if (objList.get (i) != null) {
+					int listSize = objList.get (i).size ();
+					for (int j = 0; j < listSize; j ++) {
+						if (objList.get (i).get (j) != null && !objList.get (i).get (j).isPersistent ()) {
+							objList.get (i).get (j).forget ();
+						}
+					}
+				}
+			}
+			//Loads the RMF file at the given filepath
+			readBit = 0;
+			File file = null;
+			FileInputStream stream = null;
+			file = new File (path);
+			inData = new byte[(int) file.length ()];
+			stream = new FileInputStream (file);
+			try {
+				stream.read (inData);
+				stream.close ();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//Read the header
+			if (!readChars (3).equals ("RMF")) {
+				System.out.println ("Error: file is corrupted or in an invalid format");
+			}
+			//Read header metadata
+			char version = readChar ();
+			int mapWidth = readInt ();
+			int mapHeight = readInt ();
+			int numLayers = readInt ();
+			int numObjects = readInt ();
+			
+			//Apply metadata
+			levelWidth = mapWidth;
+			levelHeight = mapHeight;
+			
+			//Read tileset list
+			String tilesetString = readTo (';');
+			String[] tilesetArr = tilesetString.split (",");
+			
+			//Import the tilesets
+			ArrayList<Sprite> tileList = new ArrayList<Sprite> ();
+			ArrayList<String> tileIdList = new ArrayList<String> ();
+			for (int i = 0; i < tilesetArr.length; i++) {
+				//Get tile images
+				if (tilesetArr[i].equals ("_NULL")) {
+					tileList.add (null);
+					tileIdList.add ("_NULL");
+				} else {
+					Spritesheet ss = new Spritesheet (tilesetArr[i]);
+					Sprite[] s = ss.toSpriteArray (16, 16);
+					//Add tiles into map
+					for (int j = 0; j < s.length; j++) {
+						tileList.add (s[j]);
+						tileIdList.add (tilesetArr [i] + ":" + String.valueOf (j));
+					}
+				}
+			}
+			
+			//Add collision data for the tilesets
+			collisionData = new boolean[tileIdList.size ()];
+			for (int i = 0; i < collisionData.length; i ++) {
+				TileData workingTile = tileAttributesList.getTile (tileIdList.get (i));
+				if (workingTile != null) {
+					collisionData [i] = workingTile.isSolid ();
+				} else {
+					collisionData [i] = true;
+				}
+			}
+			collisionData[0] = false;
+			
+			//Read object list
+			String objectString = readTo (';');
+			String[] objArr = objectString.split (",");
+
+			//Read background list
+			String backgroundString = readTo (';');
+			String[] backgroundArr = backgroundString.split (",");
+			
+			//Import backgrounds (TODO)
+			ArrayList<Background> backgroundList = new ArrayList<Background> ();
+			for (int i = 0; i < backgroundArr.length; i++) {
+				if (backgroundArr[i].equals ("_NULL")) {
+					backgroundList.add (null);
+				} else {
+					backgroundList.add (new Background (new Sprite ("resources/backgrounds/" + backgroundArr[i])));
+					i += 2; //TODO
+				}
+			}
+			
+			//Size tile data appropriately
+			tileData = new short[numLayers][mapWidth][mapHeight];
+			
+			//Import tile data
+			int numBytes = 1; //TODO
+			for (int i = 0; i < numLayers; i++) {
+				if (backgroundList.get (i) == null) {
+					for (int wy = 0; wy < mapHeight; wy++) {
+						for (int wx = 0; wx < mapWidth; wx++) {
+							tileData [i][wx][wy] = (short)readBits (numBytes * 8);
+						}
+					}
+				}
+			}
+			
+			//Import placed objects (TODO add MapUnit support)
+			int xBytes = 1; //TODO
+			int yBytes = 1; //TODO
+			int idBytes = 1; //TODO
+			for (int i = 0; i < numObjects; i++) {
+				//Read object properties
+				int objX = readBits (xBytes * 8);
+				int objY = readBits (yBytes * 8);
+				int objId = readBits (idBytes * 8);
+				String variant = readTo (';');
+				
+				//Make object
+				//TODO allow multiple packages
+				try {
+					GameObject newObject = ObjectMatrix.makeInstance (objArr[objId]);
+					newObject.declare (objX * 16, objY * 16);
+				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					//Object is invalid and cannot be instantiated
+					System.out.println ("Error while loading room " + roomName + ": object with index " + i + " could not be instantiated");
+				}
+			}
+			
+			//Set instance variables appropriately
+			this.tileList = tileList.toArray (new Sprite[0]);
+			this.tileIdList = tileIdList.toArray (new String[0]);
+			this.objectList = objArr;
+			this.backgroundList = backgroundList; //TODO
+			
+		} catch (FileNotFoundException e) {
+			//Error in room loading; keep previous room
+			roomName = previousName;
+			throw e;
+		}
+		
+		//I haven't a goddamn clue what this does
+		mapUnits.clear ();
+	}
+	public void loadCMF (String path) throws FileNotFoundException {
 		String previousName = roomName;
 		roomName = path;
 		//Purges the gameObjects
@@ -698,6 +978,7 @@ public class Room {
 			Class<?> objectClass = null;
 			Constructor<?> constructor = null;
 			String workingName;
+			ArrayList<GameObject> toDeclare = new ArrayList<GameObject> ();
 			boolean hasVariants;
 			for (int i = 0; i < objectsPlacedLength; i ++) {
 				objId = readBits (objectBits);
@@ -710,23 +991,15 @@ public class Room {
 					workingName = objectList [objId];
 					hasVariants = false;
 				}
-				try {
-					objectClass = Class.forName ("gameObjects." + workingName);
-				}
-				catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				objectClass = GameObjectLoader.getClass (workingName);
 				try {
 					GameObject obj = (GameObject) objectClass.newInstance ();
-					obj.declare (objX * 16, objY * 16);
 					if (hasVariants) {
 						obj.setVariantData (objectList [objId].split ("#")[1]);
 					}
+					obj.setX (objX * 16);
+					obj.setY (objY * 16);
+					toDeclare.add (obj);
 				} catch (InstantiationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -784,10 +1057,21 @@ public class Room {
 					}
 				}
 			}
+			for (int i = 0; i < toDeclare.size (); i ++) {
+				GameObject d = toDeclare.get (i);
+				d.declare (d.getX (), d.getY ());
+			}
+			for (int i = 0; i < toDeclare.size (); i ++) {
+				GameObject d = toDeclare.get (i);
+				if (d instanceof RoomLoadedEvent) {
+					((RoomLoadedEvent)d).onRoomLoaded ();
+				}
+			}
 		} catch (FileNotFoundException e) {
 			roomName = previousName;
 			throw e;
 		}
+		mapUnits.clear ();
 	}
 	public int numBits (int num) {
 		//Returns the number of bits needed to represent a given number

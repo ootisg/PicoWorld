@@ -1,9 +1,16 @@
 package gui;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
+import items.Berry;
+import items.Bottle;
 import items.GameItem;
 import items.GameItem.ItemType;
+import items.GoldSword;
+import items.Mushroom;
+import items.MythrilBar;
+import items.SilverSword;
 import resources.Sprite;
 import resources.Spritesheet;
 
@@ -42,6 +49,8 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		
 		selectedWeapon = -1;
 		selectedSpell = -1;
+		
+		addItem (new GoldSword ());
 	}
 	public boolean addItem (GameItem item) {
 		for (int i = 0; i < items [GameItem.getValue (item.getType ())].length; i ++) {
@@ -155,6 +164,26 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 	public void setItems (GameItem[][] items) {
 		this.items = items;
 	}
+	public ArrayList<GameItem> filter (String propertyName, String propertyValue) {
+		ArrayList<GameItem> filteredItems = new ArrayList<GameItem> ();
+		for (int i = 0; i < items.length; i ++) {
+			for (int j = 0; j < items[0].length; j ++) {
+				if (items [i][j] != null && propertyValue.equals (items[i][j].getProperty (propertyName))) {
+					filteredItems.add (items[i][j]);
+				}
+			}
+		}
+		return filteredItems;
+	}
+	public static ArrayList<GameItem> filter (ArrayList<GameItem> items, String propertyName, String propertyValue) {
+		ArrayList<GameItem> filteredItems = new ArrayList<GameItem> ();
+		for (int i = 0; i < items.size (); i++) {
+			if (propertyValue.equals (items.get (i).getProperty (propertyName))) {
+				filteredItems.add (items.get (i));
+			}
+		}
+		return filteredItems;
+	}
 	@Override
 	public void renderBackground () {
 		this.getSprite ().draw ((int)this.getX (), (int)this.getY ());
@@ -163,9 +192,9 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 	public void renderElements () {
 		for (int i = 0; i < items [0].length; i ++) {
 			if (items [pageIndex][i] != null) {
-				if (pageIndex == GameItem.getValue (ItemType.WEAPON)) {
-					if (!items [pageIndex][i].getProperty ("maxHealth").equals ("null")) {
-						itemHealth.draw ((int)getX () + (1 + i / selectionHeight) * 16, (int)getY () + (1 + i % selectionHeight) * 16 + 14, (int)(Math.ceil (Double.parseDouble (items [pageIndex][i].getProperty ("health")) / Double.parseDouble (items [pageIndex][i].getProperty ("maxHealth")) * 14)) - 1);
+				if (!Double.isNaN (items [pageIndex][i].getHealth ())) {
+					if (!items [pageIndex][i].getProperty ("maxHealth").equals ("")) {
+						itemHealth.draw ((int)getX () + (1 + i / selectionHeight) * 16, (int)getY () + (1 + i % selectionHeight) * 16 + 14, (int)(Math.ceil (items [pageIndex][i].getHealth () / Double.parseDouble (items [pageIndex][i].getProperty ("maxHealth")) * 14)) - 1);
 					}
 				}
 				items [pageIndex][i].draw ((int)getX () + (1 + i / selectionHeight) * 16, (int)getY () + (1 + i % selectionHeight) * 16);
@@ -194,7 +223,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 			drawText (itemName.toUpperCase (), 18, 4);
 		}
 		if (pageIndex == GameItem.getValue (ItemType.WEAPON) && items [pageIndex][selectIndex] != null) {
-			String healthText = items [pageIndex][selectIndex].getProperty ("health") + "/" + items [pageIndex][selectIndex].getProperty ("maxHealth");
+			String healthText = ((int)items [pageIndex][selectIndex].getHealth ()) + "/" + items [pageIndex][selectIndex].getProperty ("maxHealth");
 			if (items [pageIndex][selectIndex].getProperty ("health").equals ("null")) {
 				statWindow.setMap (CraftingMenu.buildTileMap (3, 2));
 			} else {
@@ -207,9 +236,21 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 			statWindow.draw ();
 			statWindow.drawText ("ATK:", 2, 6);
 			statWindow.drawText (items [pageIndex][selectIndex].getProperty ("attack"), 2, 16);
-			if (!items [pageIndex][selectIndex].getProperty ("health").equals ("null")) {
+			if (!Double.isNaN (items [pageIndex][selectIndex].getHealth ())) {
 				statWindow.drawText ("DRB:", 2, 36);
 				statWindow.drawText (healthText, 2, 46);
+			}
+		} else if (items [pageIndex][selectIndex] != null) {
+			if (!Double.isNaN (items [pageIndex][selectIndex].getHealth ())) {
+				String healthText = ((int)items [pageIndex][selectIndex].getHealth ()) + "/" + items [pageIndex][selectIndex].getProperty ("maxHealth");
+				int statWidth = ((int)Math.ceil (((double)(2 + healthText.length () * 8) / 16)));
+				if (statWidth < 3) {
+					statWidth = 3;
+				}
+				statWindow.setMap (CraftingMenu.buildTileMap (statWidth, 2));
+				statWindow.draw ();
+				statWindow.drawText ("DRB:", 2, 6);
+				statWindow.drawText (healthText, 2, 16);
 			}
 		}
 	}
@@ -318,6 +359,33 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 								break;
 							}
 						}
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	@Override
+	public GameItem getSimilar (GameItem item) {
+		for (int i = 0; i < items.length; i ++) {
+			for (int j = 0; j < items [0].length; j ++) {
+				if (items [i][j] != null) {
+					if (items [i][j].equals (item)) {
+						return items [i][j];
+					}
+				}
+			}
+		}
+		return null;
+	}
+	@Override
+	public boolean replace (GameItem oldItem, GameItem newItem) {
+		for (int i = 0; i < items.length; i ++) {
+			for (int j = 0; j < items [0].length; j ++) {
+				if (items [i][j] != null) {
+					if (items [i][j] == oldItem) {
+						items [i][j] = newItem;
 						return true;
 					}
 				}

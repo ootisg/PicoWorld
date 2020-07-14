@@ -55,6 +55,18 @@ public class CraftingMenu extends MappedUi {
 		recipe.addIngredient (new SilverBar ());
 		recipe.addIngredient (new WoodPlanks ());
 		recipes.add (recipe);
+		
+		recipe = new CraftingRecipe (new MagicPiece ());
+		recipe.addIngredient (new MythrilBar ());
+		recipes.add (recipe);
+		
+		GameItem working = new Potion ();
+		working.setProperty ("type", "health");
+		recipe = new CraftingRecipe (working);
+		recipe.addIngredient (new Bottle ());
+		recipe.addIngredient (new Mushroom ());
+		recipe.addIngredient (new Berry ());
+		recipes.add (recipe);
 	}
 	public ArrayList<CraftingRecipe> getWorkingRecipes () {
 		ArrayList<CraftingRecipe> workingRecipes = new ArrayList<CraftingRecipe> ();
@@ -176,8 +188,14 @@ public class CraftingMenu extends MappedUi {
 		}
 		if (c == (char)KeyEvent.VK_SPACE) {
 			for (int i = 0; i < workingRecipes.get (selectIndex).getIngredients ().size (); i ++) {
+				GameItem ingredient = workingRecipes.get (selectIndex).getIngredients ().get (i);
 				for (int j = 0; j < inventory.size (); j ++) {
-					if (inventory.get (j).removeSimilar (workingRecipes.get (selectIndex).getIngredients ().get (i))) {
+					if (ingredient instanceof CraftingItem) {
+						if (((CraftingItem) (inventory.get (j).getSimilar (ingredient))).useInCrafting ()) {
+							break;
+						}
+					}
+					if (inventory.get (j).removeSimilar (ingredient)) {
 						break;
 					}
 				}

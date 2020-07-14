@@ -1,1 +1,2 @@
 color;red,orange,yellow,green,blue,purple:frame
+puzzleId:query

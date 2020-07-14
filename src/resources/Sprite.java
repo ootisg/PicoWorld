@@ -6,18 +6,21 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 import main.MainLoop;
 
-public class Sprite {
+public class Sprite implements Resource {
+	private String[] paths = null;
 	private BufferedImage[] imageArray;
 	private boolean isAnimated;
 	private int frame;
 	private int width;
 	private int height;
+	private boolean loaded;
 	public Sprite (BufferedImage image) {
 		imageArray = new BufferedImage[] {image};
 		width = image.getWidth ();
@@ -31,28 +34,13 @@ public class Sprite {
 		isAnimated = true;
 	}
 	public Sprite (String filepath) {
-		imageArray = new BufferedImage[1];
-		try {
-			imageArray [0] = ImageIO.read (new File (filepath));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		width = imageArray [0].getWidth ();
-		height = imageArray [0].getHeight ();
+		paths = new String[] {filepath};
+		ResourceLoader.loadResource (this);
 		isAnimated = false;
 	}
 	public Sprite (String[] filepaths) {
-		int files = filepaths.length;
-		imageArray = new BufferedImage[files];
-		for (int i = 0; i < files; i ++) {
-			try {
-				imageArray [i] = ImageIO.read (new File (filepaths [i]));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		width = imageArray [0].getWidth ();
-		height = imageArray [0].getHeight ();
+		paths = filepaths;
+		ResourceLoader.loadResource (this);
 		isAnimated = true;
 	}
 	public Sprite (Spritesheet spritesheet, int x, int y, int width, int height) {
@@ -110,7 +98,7 @@ public class Sprite {
 		return new Sprite (newImages);
 	}
 	public static void draw (BufferedImage image, int x, int y) {
-		Graphics bufferImage = MainLoop.getWindow ().getBuffer ();
+		Graphics bufferImage = MainLoop.getWindow ().getBufferGraphics ();
 		if (bufferImage != null) {
 			bufferImage.drawImage (image, x, y, null);
 		}
@@ -140,7 +128,7 @@ public class Sprite {
 			y1 = 0;
 			y2 = height;
 		}
-		Graphics bufferImage = MainLoop.getWindow ().getBuffer ();
+		Graphics bufferImage = MainLoop.getWindow ().getBufferGraphics ();
 		if (bufferImage != null) {
 			bufferImage.drawImage (this.imageArray [frame], x, y, x + width, y + height, x1, y1, x2, y2, null);
 		}
@@ -168,5 +156,20 @@ public class Sprite {
 	}
 	public int getHeight () {
 		return height;
+	}
+	@Override
+	public void load () throws IOException {
+		if (paths != null) {
+			imageArray = new BufferedImage[paths.length];
+			for (int i = 0; i < paths.length; i++) {
+				imageArray [i] = ImageIO.read (new File (paths [i]));
+			}
+			width = imageArray [0].getWidth ();
+			height = imageArray [0].getHeight ();
+		}
+	}
+	@Override
+	public boolean isLoaded () {
+		return loaded;
 	}
 }

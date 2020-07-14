@@ -14,7 +14,7 @@ public class MythrilSword extends WeaponItem {
 	public boolean use () {
 		GameAPI.getPlayer ().useSword (this);
 		//Use hit check later
-		setProperty ("health", String.valueOf (Integer.parseInt (getProperty ("health")) - 1));
+		damage (1);
 		//Aaaand add break checks later too
 		return true;
 	}

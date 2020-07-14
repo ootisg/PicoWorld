@@ -4,8 +4,16 @@ import gameObjects.DamageSource;
 import main.GameObject;
 
 public abstract class Projectile extends GameObject implements DamageSource {
-	private double velocityX;
-	private double velocityY;
+	private double velocityX = 1;
+	private double velocityY = 0;
+	
+	private double direction;
+	
+	public static final double DIRECTION_INVALID = Double.NaN;
+	public static final double DIRECTION_RIGHT = 0;
+	public static final double DIRECTION_UP = Math.PI / 2;
+	public static final double DIRECTION_LEFT = Math.PI;
+	public static final double DIRECTION_DOWN = (Math.PI * 3) / 2;
 	
 	@Override
 	public void frameEvent () {
@@ -26,11 +34,7 @@ public abstract class Projectile extends GameObject implements DamageSource {
 		return Math.sqrt (this.velocityX * this.velocityX + this.velocityY * this.velocityY);
 	}
 	public double getDirection () {
-		if (velocityY < 0) {
-			return Math.atan (-velocityY / velocityX);
-		} else {
-			return Math.atan (-velocityY / velocityX) + Math.PI / 2;
-		}
+		return direction;
 	}
 	public void setVelocityX (double velocityX) {
 		this.velocityX = velocityX;
@@ -45,7 +49,22 @@ public abstract class Projectile extends GameObject implements DamageSource {
 	}
 	public void setDirection (double direction) {
 		double scalar = getSpeed ();
+		this.direction = direction;
 		this.velocityX = Math.cos (direction) * scalar;
-		this.velocityY = Math.sin (direction) * scalar;
+		this.velocityY = -Math.sin (direction) * scalar;
+	}
+	//Unsure if I'll actually use these
+	public static boolean isHorizontalDirection (double direction) {
+		if (direction == DIRECTION_RIGHT || direction == DIRECTION_LEFT) {
+			return true;
+		}
+		return false;
+	}
+	public static boolean isVerticalDirection (double direction) {
+		if (direction == DIRECTION_UP || direction == DIRECTION_DOWN) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
