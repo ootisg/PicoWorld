@@ -4,6 +4,8 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFrame;
@@ -24,9 +26,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class GameWindow extends JFrame {
-	Clip clip;
+	ArrayList<SoundClip> clips;
 	public boolean[] keysPressed;
 	public boolean[] keysPressedCache;
 	public boolean[] keysPressedOnFrame;
@@ -65,12 +68,6 @@ public class GameWindow extends JFrame {
 		keysReleasedOnFrameCache = new boolean[256]; //Cache array for tracking which keys have just been released
 		bufferGraphics = bufferImage.getGraphics (); //Get a graphics interface for bufferedimage
 		bufferRaster = rasterImage.getRaster ();
-		try {
-			clip = AudioSystem.getClip ();
-		} catch (LineUnavailableException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		/*try {
 			AudioInputStream audioIn = AudioSystem.getAudioInputStream (new File ("resources/audio/test.wav"));
 			try {
@@ -295,5 +292,80 @@ public class GameWindow extends JFrame {
 			}
 		}
 		cacheMode = mode;
+	}
+	public SoundClip playSound (String filepath, int numTimes) {
+		try {
+			Clip c = AudioSystem.getClip ();
+			AudioInputStream inStream = AudioSystem.getAudioInputStream (new File (filepath));
+			c.open (inStream);
+			return new SoundClip (c, numTimes); //Automatically adds the clip to the ArrayList clips
+		} catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null; //No sound clip to play
+	}
+	public SoundClip playSound (String filepath) {
+		return playSound (filepath, 1);
+	}
+	public SoundClip playSoundForever (String filepath) {
+		return playSound (filepath, Clip.LOOP_CONTINUOUSLY);
+	}
+	public class SoundClip {
+		
+		public static final int STATUS_UNKNOWN = 0;
+		public static final int STATUS_PLAYING = 1;
+		public static final int STATUS_STOPPED = 2;
+		
+		private int status = STATUS_UNKNOWN;
+		private Clip clip;
+		
+		public SoundClip (Clip clip, int loopCount) {
+			this.clip = clip;
+			SoundClipListener listener = new SoundClipListener (this);
+			clip.addLineListener (listener);
+			if (loopCount != 1) {
+				clip.loop (loopCount);
+			} else {
+				clip.start ();
+			}
+		}
+		
+		public SoundClip (Clip clip) {
+			this (clip, 1);
+		}
+		
+		public int getStatus () {
+			return status;
+		}
+		
+		public Clip getClip () {
+			return clip;
+		}
+		
+		public void setStatus (int status) {
+			this.status = status;
+		}
+		
+	}
+	public class SoundClipListener implements LineListener {
+
+		private SoundClip clip;
+		
+		public SoundClipListener (SoundClip clip) {
+			this.clip = clip;
+		}
+		
+		@Override
+		public void update (LineEvent e) {
+			if (e.getType () == LineEvent.Type.START) {
+				clip.setStatus (SoundClip.STATUS_PLAYING);
+				clips.add (clip);
+			} else if (e.getType () == LineEvent.Type.STOP) {
+				clip.setStatus (SoundClip.STATUS_STOPPED);
+				clips.remove (clip);
+			}
+		}
+		
 	}
 }

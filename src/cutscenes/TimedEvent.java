@@ -2,16 +2,15 @@ package cutscenes;
 
 public abstract class TimedEvent extends Event {
 
-	int ms = 0;
+	long startTime;
+
+	protected TimedEvent () {
+		startTime = System.currentTimeMillis ();
+	}
 	
 	@Override
-	public void doFrame () {
-		ms++;
-	}
-
-	@Override
 	public boolean isOver () {
-		if (ms >= getDuration ()) {
+		if (getElapsedTimeMs () >= getDuration ()) {
 			return true;
 		} else {
 			return false;
@@ -19,7 +18,7 @@ public abstract class TimedEvent extends Event {
 	}
 	
 	public int getElapsedTimeMs () {
-		return ms;
+		return (int)(System.currentTimeMillis () - startTime);
 	}
 	
 	public int getDuration () {

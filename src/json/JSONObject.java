@@ -17,7 +17,16 @@ public class JSONObject {
 	public JSONObject (String value) throws JSONException {
 		//Parse the input text to remove whitespace
 		values = new HashMap<String, Object> ();
-		String noWhitespace = value.replaceAll ("\\s", "");
+		String noWhitespace = "";
+		boolean quotes = false;
+		for (int i = 0; i < value.length (); i++) {
+			if (value.charAt (i) == '\"') {
+				quotes = !quotes;
+			}
+			if (!(Character.isWhitespace (value.charAt (i)) && !quotes)) {
+				noWhitespace += value.charAt (i);
+			}
+		}
 		if (noWhitespace.charAt (0) == '{' && noWhitespace.charAt (noWhitespace.length () - 1) == '}') {
 			noWhitespace = noWhitespace.substring (1, noWhitespace.length () - 1);
 		} else {
@@ -146,7 +155,7 @@ public class JSONObject {
 	 * @param key the key to use
 	 * @return the associated int
 	 */
-	public int getInt (String key) {
+	public Integer getInt (String key) {
 		return (Integer)values.get (key);
 	}
 	

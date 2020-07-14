@@ -31,7 +31,7 @@ public class Cutscene extends GameObject {
 	 * Makes a new cutscene from the JSON file at the given filepath
 	 * 
 	 * JSON tags/formatting/whatnot:
-	 * Objects: Array of JSON objects
+	 * objs: Array of JSON objects
 	 * Object format:
 	 * {
 	 * 		"id":String
@@ -45,6 +45,7 @@ public class Cutscene extends GameObject {
 	 * 		"startY":int - optional
 	 * 		"params":Array - list of params to pass to constructor (optional)
 	 * }
+	 * events: Array of JSON objects
 	 * Event format:
 	 * {
 	 * 		"id":String
@@ -86,6 +87,7 @@ public class Cutscene extends GameObject {
 		}
 		
 		//Make all the events
+		events = new ArrayList<Event> ();
 		for (int i = 0; i < eventDecs.getContents ().size (); i++) {
 			Event newEvent = null;
 			JSONObject currEvent = (JSONObject)eventDecs.get (i);
@@ -98,7 +100,10 @@ public class Cutscene extends GameObject {
 			}
 			Constructor<?> eventConstructor = eventClass.getConstructors ()[0]; //Add support for better constructor stuffs?
 			try {
-				newEvent = (Event)eventConstructor.newInstance (currEvent);
+				newEvent = (Event)eventConstructor.newInstance ();
+				newEvent.setArgs (currEvent);
+				newEvent.setAssociatedCutscene (this);
+				events.add (newEvent);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
 				// TODO Auto-generated catch block
@@ -169,23 +174,27 @@ public class Cutscene extends GameObject {
 	public void endEvent (Event e) {
 		e.end ();
 		
-		//Start events with the ended event as a trigger
-		JSONObject eArgs = e.getArgs ();
-		JSONObject eTrigger = eArgs.getJSONObject ("trigger");
-		String eTriggerId = eTrigger.getString ("eventId"); //TODO make helper method
+		//Run the next event in the list
 		for (int i = 0; i < events.size (); i++) {
-			Event curr = events.get (i);
-			if (curr == e && i < events.size () - 1) {
+			if (events.get (i) == e && i < events.size () - 1) {
 				Event next = events.get (i + 1);
 				JSONObject nextArgs = next.getArgs ();
 				JSONObject nextTrigger = nextArgs.getJSONObject ("trigger");
-				if (nextTrigger != null) {
-					startEvent (curr);
+				if (nextTrigger == null) {
+					startEvent (next);
+					break;
 				}
-			} else {
+			}
+		}
+			
+		//Run the event(s) triggered by the ending of this one
+		for (int i = 0; i < events.size (); i++) {
+			Event curr = events.get (i);
+			JSONObject trigger = curr.getArgs ().getJSONObject ("trigger");
+			if (trigger != null) {
+				String triggerId = trigger.getString ("eventId"); //TODO make helper method
 				JSONObject args = curr.getArgs ();
-				String currId = curr.getId ();
-				if (eTriggerId.equals (currId)) {
+				if (triggerId.equals (e.getId ())) {
 					startEvent (curr);
 				}
 			}
@@ -205,6 +214,11 @@ public class Cutscene extends GameObject {
 				endEvent (curr);
 				eventsInProgress.remove (curr);
 				i--; //Decrements the index to correct the position
+				//End cutscene if there's no more events
+				if (eventsInProgress.size () == 0) {
+					forget ();
+					return;
+				}
 			} else {
 				curr.doFrame ();
 			}

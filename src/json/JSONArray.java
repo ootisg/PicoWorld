@@ -16,7 +16,16 @@ public class JSONArray {
 		this ();
 		
 		//Remove whitespace
-		String noWhitespace = value.replaceAll ("\\s", "");
+		String noWhitespace = "";
+		boolean quotes = false;
+		for (int i = 0; i < value.length (); i++) {
+			if (value.charAt (i) == '\"') {
+				quotes = !quotes;
+			}
+			if (!(Character.isWhitespace (value.charAt (i)) && !quotes)) {
+				noWhitespace += value.charAt (i);
+			}
+		}
 		
 		//Check for array-ness, and if so, parse out the brackets
 		if (noWhitespace.charAt (0) == '[' && noWhitespace.charAt (noWhitespace.length () - 1) == ']') {

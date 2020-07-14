@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import ai.PathDisplayer;
 import ai.Pathfinder;
+import cutscenes.Cutscene;
 import gameObjects.AnimationTester;
 import gameObjects.FlameElemental;
 import gameObjects.FrostElemental;
@@ -73,6 +74,8 @@ public class GameCode extends GameAPI {
 		}**/
 		MainLoop.getWindow ().setResolution (512, 288);
 		MainLoop.getWindow ().setSize (1024, 576);
+		new Cutscene ("yeetus.txt");
+		MainLoop.getWindow ().playSoundForever ("resources/sounds/copyrighted_placeholder_music.wav");
 	}
 	public void gameLoop () {
 		//Saveable.printSaves ();
