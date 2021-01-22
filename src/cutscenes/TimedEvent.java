@@ -5,11 +5,17 @@ public abstract class TimedEvent extends Event {
 	long startTime;
 
 	protected TimedEvent () {
+		
+	}
+	
+	@Override
+	public void start () {
 		startTime = System.currentTimeMillis ();
 	}
 	
 	@Override
 	public boolean isOver () {
+		//System.out.println(getElapsedTimeMs () + ", " + getDuration ());
 		if (getElapsedTimeMs () >= getDuration ()) {
 			return true;
 		} else {

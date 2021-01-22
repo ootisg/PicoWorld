@@ -18,6 +18,7 @@ public class MagicContainer extends GuiComponent {
 		super ();
 		fill = .5;
 		fillColor = new Color (0x00FFFF);
+		setPriority (-2);
 	}
 	
 	public void setMaxFill (double fill) {

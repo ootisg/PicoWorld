@@ -1,3 +1,0 @@
-type:query
-reward:query
-id:query

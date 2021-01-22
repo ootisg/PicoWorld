@@ -1,0 +1,7 @@
+VF 1
+name=id
+name=destination
+name=type
+name=transitionId
+name=xoffset
+name=yoffset

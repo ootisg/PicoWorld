@@ -615,9 +615,16 @@ public class Room {
 		}
 		return result;
 	}
+	public short getTileId (int x, int y, int layer) {
+		//Returns the numerical tile ID at x, y
+		return tileData [layer][x][y];
+	}
 	public short getTileId (int x, int y) {
 		//Returns the numerical tile ID at x, y
 		return tileData [0][x][y];
+	}
+	public Sprite getTileIcon (short tileId) {
+		return tileList [tileId];
 	}
 	public short getNumericalId (String tileId) {
 		//Returns the numerical ID associated with the tile tileId; returns -1 if no ID is found
@@ -677,7 +684,7 @@ public class Room {
 		}
 	}
 	public void loadRoom (String path) throws FileNotFoundException {
-		loadCMF (path);
+		loadRMF (path);
 		return;
 	}
 	public void loadRMF (String path) throws FileNotFoundException {
@@ -763,6 +770,10 @@ public class Room {
 				}
 			}
 			
+			//Set instance variables appropriately
+			this.tileList = tileList.toArray (new Sprite[0]);
+			this.tileIdList = tileIdList.toArray (new String[0]);
+			
 			//Add collision data for the tilesets
 			collisionData = new boolean[tileIdList.size ()];
 			for (int i = 0; i < collisionData.length; i ++) {
@@ -819,11 +830,24 @@ public class Room {
 				int objY = readBits (yBytes * 8);
 				int objId = readBits (idBytes * 8);
 				String variant = readTo (';');
+				if (variant.length () > 0) {
+					variant = variant.substring (1);
+				}
 				
 				//Make object
 				//TODO allow multiple packages
 				try {
+					//Make the object
 					GameObject newObject = ObjectMatrix.makeInstance (objArr[objId]);
+					//Assign the object's variants
+					String[] variantSplit = variant.split (",");
+					for (int vi = 0; vi < variantSplit.length; vi++) {
+						String[] attribPair = variantSplit [vi].split (":");
+						if (attribPair.length == 2) {
+							newObject.setVariantAttribute (attribPair [0], attribPair [1]);
+						}
+					}
+					//Declare the object
 					newObject.declare (objX * 16, objY * 16);
 				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					//Object is invalid and cannot be instantiated
@@ -831,9 +855,7 @@ public class Room {
 				}
 			}
 			
-			//Set instance variables appropriately
-			this.tileList = tileList.toArray (new Sprite[0]);
-			this.tileIdList = tileIdList.toArray (new String[0]);
+			//Set object list
 			this.objectList = objArr;
 			this.backgroundList = backgroundList; //TODO
 			

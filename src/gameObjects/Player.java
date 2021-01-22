@@ -37,6 +37,7 @@ public class Player extends GameObject implements Damageable {
 	int healthbarTimer = 0;
 	boolean swinging = false;
 	boolean magicSelected = false;
+	boolean noclip = true;
 	public static final int DIRECTION_UP = 0;
 	public static final int DIRECTION_LEFT = 1;
 	public static final int DIRECTION_DOWN = 2;
@@ -91,28 +92,28 @@ public class Player extends GameObject implements Damageable {
 				if (keyCheck ('W')) {
 					direction = DIRECTION_UP;
 					setY (getY () - speed);
-					if (collidingWithBarrier ()) {
+					if (!noclip && collidingWithBarrier ()) {
 						this.backstepY ();
 					}
 				}
 				if (keyCheck ('A')) {
 					direction = DIRECTION_LEFT;
 					setX (getX () - speed);
-					if (collidingWithBarrier ()) {
+					if (!noclip && collidingWithBarrier ()) {
 						this.backstepX ();
 					}
 				}
 				if (keyCheck ('S')) {
 					direction = DIRECTION_DOWN;
 					setY (getY () + speed);
-					if (collidingWithBarrier ()) {
+					if (!noclip && collidingWithBarrier ()) {
 						this.backstepY ();
 					}
 				}
 				if (keyCheck ('D')) {
 					direction = DIRECTION_RIGHT;
 					setX (getX () + speed);
-					if (collidingWithBarrier ()) {
+					if (!noclip && collidingWithBarrier ()) {
 						this.backstepX ();
 					}
 				}
@@ -197,6 +198,15 @@ public class Player extends GameObject implements Damageable {
 		if (health <= 0) {
 			health = maxHealth;
 			MainLoop.getConsole ().enable ("You died oof");
+		}
+	}
+	@Override
+	public void onDeclare () {
+		//Use the startpos if present
+		ArrayList<GameObject> startpos = MainLoop.getObjectMatrix ().getObjects ("gameObjects.Startpos");
+		if (startpos != null && startpos.size () != 0) {
+			this.setX (startpos.get (0).getX ());
+			this.setY (startpos.get (0).getY ());
 		}
 	}
 	@Override

@@ -27,6 +27,8 @@ public class Cutscene extends GameObject {
 	
 	private ArrayList<Event> eventsInProgress = null;
 	
+	private Callback endCall;
+	
 	/**
 	 * Makes a new cutscene from the JSON file at the given filepath
 	 * 
@@ -100,7 +102,8 @@ public class Cutscene extends GameObject {
 			}
 			Constructor<?> eventConstructor = eventClass.getConstructors ()[0]; //Add support for better constructor stuffs?
 			try {
-				newEvent = (Event)eventConstructor.newInstance ();
+				System.out.println (eventConstructor);
+				newEvent = (Event)(eventConstructor.newInstance ());
 				newEvent.setArgs (currEvent);
 				newEvent.setAssociatedCutscene (this);
 				events.add (newEvent);
@@ -111,6 +114,7 @@ public class Cutscene extends GameObject {
 			}
 		}
 		
+		events.get (0).start ();
 		declare (0, 0);
 	}
 	
@@ -187,18 +191,31 @@ public class Cutscene extends GameObject {
 			}
 		}
 			
-		//Run the event(s) triggered by the ending of this one
+		//Run (and stop) the event(s) triggered by the ending of this one
 		for (int i = 0; i < events.size (); i++) {
 			Event curr = events.get (i);
-			JSONObject trigger = curr.getArgs ().getJSONObject ("trigger");
-			if (trigger != null) {
-				String triggerId = trigger.getString ("eventId"); //TODO make helper method
+			JSONObject startTrigger = curr.getArgs ().getJSONObject ("startTrigger");
+			JSONObject endTrigger = curr.getArgs ().getJSONObject ("endTrigger");
+			if (startTrigger != null) {
+				String triggerId = startTrigger.getString ("eventId"); //TODO make helper method
 				JSONObject args = curr.getArgs ();
 				if (triggerId.equals (e.getId ())) {
 					startEvent (curr);
 				}
 			}
+			if (endTrigger != null) {
+				String triggerId = endTrigger.getString ("eventId");
+				JSONObject args = curr.getArgs ();
+				if (triggerId.equals (e.getId ())) {
+					endEvent (curr);
+					eventsInProgress.remove (curr);
+				}
+			}
 		}
+	}
+	
+	public void setCallback (Callback callback) {
+		endCall = callback;
 	}
 	
 	@Override
@@ -216,6 +233,9 @@ public class Cutscene extends GameObject {
 				i--; //Decrements the index to correct the position
 				//End cutscene if there's no more events
 				if (eventsInProgress.size () == 0) {
+					if (endCall != null) {
+						endCall.call ();
+					}
 					forget ();
 					return;
 				}

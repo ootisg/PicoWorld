@@ -248,6 +248,9 @@ public class GameWindow extends JFrame {
 	public Graphics getBufferGraphics () {
 		return bufferGraphics;
 	}
+	public BufferedImage getBufferImage () {
+		return bufferImage;
+	}
 	public int[] getResolution () {
 		return resolution;
 	}

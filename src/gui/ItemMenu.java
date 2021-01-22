@@ -2,11 +2,16 @@ package gui;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import items.Berry;
 import items.Bottle;
 import items.GameItem;
 import items.GameItem.ItemType;
+import json.JSONArray;
+import json.JSONException;
+import json.JSONObject;
+import json.JSONUtil;
 import items.GoldSword;
 import items.Mushroom;
 import items.MythrilBar;
@@ -17,6 +22,7 @@ import resources.Spritesheet;
 public class ItemMenu extends GuiComponent implements ItemContainer {
 	private GameItem[][] items;
 	private Sprite[] pageIcons;
+	private String[] pageNames;
 	private Sprite itemHealth;
 	public static final int selectionHeight = 4;
 	public static final int selectionWidth = 6;
@@ -25,19 +31,59 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 	private int pageIndex;
 	private MappedUi statWindow;
 	
+	Layout[] pageLayouts;
+	
 	private int selectedWeapon;
 	private int selectedSpell;
 	
 	public ItemMenu (int x, int y) {
-		super (getSprites ().itemUi);
+		
+		//Declare the menu
+		super (null);
 		declare (x, y);
-		items = new GameItem[numPages][selectionWidth * selectionHeight];
+		
+		//Read the params file
+		JSONObject params = null;
+		try {
+			params = JSONUtil.loadJSONFile ("resources/config/inventory.json");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//Set the background
+		setSprite (new Sprite (params.getString ("background")));
+		
+		//Initialize the item arrays
+		JSONArray tabs = params.getJSONArray ("tabs");
+		int numTabs = tabs.getContents ().size ();
+		items = new GameItem[numTabs][24]; //Size of 24 because problems
+		pageIcons = new Sprite[numTabs];
+		pageNames = new String[numTabs];
+		pageLayouts = new Layout[numTabs];
+		
+		//Initialize page metadata
+		for (int i = 0; i < numTabs; i++) {
+			JSONObject currentTab = (JSONObject)tabs.get (i);
+			String currentName = currentTab.getString ("name");
+			String currentIcon = currentTab.getString ("icon");
+			Sprite iconSprite = new Sprite (currentIcon);
+			String currentLayout = currentTab.getString ("layout");
+			if (currentLayout != null) {
+				pageLayouts [i] = new Layout (params.getJSONObject ("layouts").getJSONArray (currentLayout));
+			} else {
+				pageLayouts [i] = new Layout (params.getJSONObject ("layouts").getJSONArray ("default"));
+			}
+			pageNames [i] = currentName;
+			pageIcons [i] = iconSprite;
+		}
+		/*items = new GameItem[numPages][selectionWidth * selectionHeight];
 		pageIcons = new Sprite[numPages];
 		pageIcons [0] = new Sprite ("resources/sprites/weapon_icon.png");
 		pageIcons [1] = new Sprite ("resources/sprites/equipment_icon.png");
 		pageIcons [2] = new Sprite ("resources/sprites/consumable_icon.png");
 		pageIcons [3] = new Sprite ("resources/sprites/material_icon.png");
-		pageIcons [4] = new Sprite ("resources/sprites/spell_icon.png");
+		pageIcons [4] = new Sprite ("resources/sprites/spell_icon.png");*/
 		itemHealth = new Sprite (new Spritesheet ("resources/sprites/itemhealth.png"), 16, 1);
 		selectIndex = 4;
 		pageIndex = 0;
@@ -139,6 +185,10 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 					break;
 			}
 		}
+	}
+	@Override
+	public void guiFrame () {
+		super.guiFrame ();
 	}
 	public GameItem[][] getItems () {
 		return items;

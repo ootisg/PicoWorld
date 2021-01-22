@@ -28,7 +28,7 @@ public class Ladder extends GameObject {
 				ArrayList<GameObject> holes = MainLoop.getObjectMatrix ().getObjects ("gameObjects.Hole");
 				for (int i = 0; i < holes.size (); i ++) {
 					if (holes.get (i).getVariantAttribute ("id").equals (getVariantAttribute ("id"))) {
-						Hole workingHole = (Hole)holes.get (i);
+						MapExit workingHole = (MapExit)holes.get (i);
 						workingHole.deactivate ();
 						getPlayer ().setX (workingHole.getX () + Double.parseDouble (workingHole.getVariantAttribute ("xoffset")));
 						getPlayer ().setY (workingHole.getY () + Double.parseDouble (workingHole.getVariantAttribute ("yoffset")));

@@ -19,6 +19,8 @@ public class FlameElemental extends Enemy {
 	double targetY;
 	double speed;
 	double sightRange;
+	int minLife = 7;
+	int maxLife = 30;
 	int timer1;
 	int timer2;
 	public FlameElemental () {
@@ -43,7 +45,7 @@ public class FlameElemental extends Enemy {
 			for (int i = 0; i < 16; i ++) {
 				for (int j = 0; j < 16; j ++) {
 					if (Math.random () * 255 < (raster.getSample (i, j, 0) * densityCoefficient)) {
-						new Particle (i + this.getX (), j + this.getY (), particleColor, 1, 30, Math.random () * Math.PI * 2, Math.random () * particleSpeedCoefficient, .25);
+						new Particle (i + this.getX (), j + this.getY (), particleColor, 1, (int)((maxLife - minLife) * Math.random () + maxLife), Math.random () * Math.PI * 2, Math.random () * particleSpeedCoefficient);
 					}
 				}
 			}

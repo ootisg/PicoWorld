@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import resources.AnimationHandler;
 import resources.Sprite;
 
-public abstract class GameObject extends GameAPI implements Comparable {
+public abstract class GameObject extends GameAPI implements Comparable<GameObject> {
 	protected int[] matrixLocation;
 	private Variant variant = new Variant ("");
 	private double x;
@@ -15,7 +15,7 @@ public abstract class GameObject extends GameAPI implements Comparable {
 	private double yprevious;
 	private int hitboxXOffset;
 	private int hitboxYOffset;
-	private int priority;
+	private int priority = 0;
 	private long orderingNumber = -1;
 	private Sprite sprite;
 	private AnimationHandler animationHandler = new AnimationHandler (sprite);
@@ -36,7 +36,6 @@ public abstract class GameObject extends GameAPI implements Comparable {
 		xprevious = x;
 		yprevious = y;
 		hidden = false;
-		priority = 0;
 		isDeclared = true;
 		onDeclare ();
 	}
@@ -383,14 +382,18 @@ public abstract class GameObject extends GameAPI implements Comparable {
 		//Returns the position of this object on the object matrix in the format [x, y]
 		return matrixLocation;
 	}
+	public int[] getDrawCoords () {
+		return new int[] {(int)x - getRoom ().getViewX (), (int)y - getRoom ().getViewY ()};
+	}
 	public void drawSprite () {
 		//Draws the Sprite associated with this GameObject
-		if (sprite != null) {	
+		if (sprite != null) {
+			int[] drawCoords = getDrawCoords ();
 			if (animationEnabled) {
-				animationHandler.animate ((int) x - getRoom ().getViewX (), (int) y - getRoom ().getViewY (), flipHorizontal, flipVertical);
+				animationHandler.animate (drawCoords [0], drawCoords [1], flipHorizontal, flipVertical);
 			} else {
 				sprite.setFrame (0);
-				sprite.draw ((int) x - getRoom ().getViewX (), (int) y - getRoom ().getViewY (), flipHorizontal, flipVertical);
+				sprite.draw (drawCoords [0], drawCoords [1], flipHorizontal, flipVertical);
 			}
 		}
 	}
@@ -510,16 +513,16 @@ public abstract class GameObject extends GameAPI implements Comparable {
 		return false;
 	}
 	@Override
-	public int compareTo (Object object) {
-		if (this.getPriority () < ((GameObject)object).getPriority ()) {
+	public int compareTo (GameObject object) {
+		if (this.getPriority () < (object).getPriority ()) {
 			//High priority comes first
 			return 1;
-		} else if (this.getPriority () > ((GameObject)object).getPriority ()) {
+		} else if (this.getPriority () > (object).getPriority ()) {
 			return -1;
 		} else {
-			if (this.getOrderingNumber () < ((GameObject)object).getOrderingNumber ()) {
+			if (this.getOrderingNumber () < (object).getOrderingNumber ()) {
 				return -1;
-			} else if (this.getOrderingNumber () > ((GameObject)object).getOrderingNumber ()) {
+			} else if (this.getOrderingNumber () > (object).getOrderingNumber ()) {
 				return 1;
 			} else {
 				return 0;

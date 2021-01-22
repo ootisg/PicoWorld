@@ -8,6 +8,7 @@ import ai.PathDisplayer;
 import ai.Pathfinder;
 import cutscenes.Cutscene;
 import gameObjects.AnimationTester;
+import gameObjects.BoundsMarker;
 import gameObjects.FlameElemental;
 import gameObjects.FrostElemental;
 import gameObjects.GlobalSave;
@@ -28,6 +29,9 @@ import puzzle.LightFocuser;
 import puzzle.LightSwitch;
 import resources.Sprite;
 import resources.Spritesheet;
+import visualEffects.ColorOverlay;
+import visualEffects.FlashOverlay;
+import visualEffects.ParticleOverlay;
 
 public class GameCode extends GameAPI {
 	private GameWindow gameWindow;
@@ -38,23 +42,25 @@ public class GameCode extends GameAPI {
 		new GlobalSave ().declare (0, 0);
 		//Load the starting room
 		try {
-			getRoom ().loadRoom ("resources/maps/testmap3.cmf");
+			//getRoom ().loadRoom ("resources/maps/testmap3.cmf");
+			getRoom ().loadRoom ("resources/maps/overworld.rmf");
+			//getRoom ().loadRoom ("resources/maps/cave_1.rmf");
 			//getRoom ().loadRoom ("resources/maps/testermap.rmf");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//Declare the player
-		getPlayer ().declare (256, 32);
+		getPlayer ().declare (288, 32);
 		//new InfusionAltar ().declare (32, 32);
 		//Create enemies (TODO)
 		//new TestEnemy ().declare (128, 160);
 		//new FlameElemental ().declare (32, 32);
 		//new Isopod ().declare (128, 64);
 		//new MagicDrop (new MagicGem ()).declare (32, 48);
-		new MagicSlime ().declare (32, 64);
-		new LightFocuser ().declare (16, 16);
-		new ItemDrop (new LightBoltSpell ()).declare (32, 16);
+		//new MagicSlime ().declare (32, 64);
+		//new LightFocuser ().declare (16, 16);
+		getGui ().getItemMenu ().addItem (new LightBoltSpell ());
 		/*for (int i = 0; i < 576; i ++) {
 		 //MAKES APPLES
 			for (int j = 0; j < 576; j ++) {
@@ -74,8 +80,12 @@ public class GameCode extends GameAPI {
 		}**/
 		MainLoop.getWindow ().setResolution (512, 288);
 		MainLoop.getWindow ().setSize (1024, 576);
-		new Cutscene ("yeetus.txt");
-		MainLoop.getWindow ().playSoundForever ("resources/sounds/copyrighted_placeholder_music.wav");
+		//new Cutscene ("bestscene.txt");
+		//FlashOverlay ov = new FlashOverlay (new Color (0, 0, 255, 127), null, 1000, 500, 1000);
+		//ov.declare (0, 0);
+		//ParticleOverlay pov = new ParticleOverlay (null);
+		//pov.declare (0, 0);
+		//MainLoop.getWindow ().playSoundForever ("resources/sounds/copyrighted_placeholder_music.wav");
 	}
 	public void gameLoop () {
 		//Saveable.printSaves ();

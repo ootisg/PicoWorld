@@ -12,7 +12,8 @@ public class GoldSword extends WeaponItem {
 	}
 	@Override
 	public boolean use () {
-		MainLoop.getWindow ().playSound ("resources/sounds/Swoosh 3-SoundBible.com-1573211927.wav");
+		MainLoop.getWindow ().playSound ("resources/sounds/magic_sound.wav");
+		//MainLoop.getWindow ().playSound ("resources/sounds/Swoosh 3-SoundBible.com-1573211927.wav");
 		GameAPI.getPlayer ().useSword (this);
 		return true;
 	}
