@@ -126,7 +126,6 @@ public class TestEnemy extends FourDirectionalEnemy {
 	
 	@Override
 	public void onKnockbackEnd () {
-		System.out.println ("HIA");
 		recalculatePath ();
 	}
 }

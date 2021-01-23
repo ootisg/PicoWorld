@@ -40,13 +40,13 @@ public class Room {
 	private int readBit;
 	private byte[] inData;
 	private static double[] hitboxCorners = new double[] {0, 0, 1, 0, 1, 1, 0, 1, 0, 0};
-	private TileAttributesList tileAttributesList;
+	private TileAttributesMap tileAttributesList;
 	private ArrayList<Background> backgroundList;
 	private HashMap<String, MapUnit> mapUnits;
 	public TileBuffer tileBuffer = new TileBuffer ();
 	public Room () {
 		//A fairly generic constructor
-		tileAttributesList = new TileAttributesList (MapConstants.tileList);
+		tileAttributesList = new TileAttributesMap ();
 		tileData = new short[1][32][32];
 		levelWidth = 32;
 		levelHeight = 32;
@@ -267,9 +267,6 @@ public class Room {
 						return;
 					}
 					if (collisionData [getTileId (tileFinalX, tileFinalY)] && collisionData [getTileId (tileFinalX - 1, tileFinalY)]) {
-						System.out.print(tileFinalX);
-						System.out.print(", ");
-						System.out.println(tileFinalY);
 						tileBuffer.collisionX = x1;
 						tileBuffer.collisionY = y2;
 						tileBuffer.spriteUsed = tileList [getTileId ((int) x1 / 16, (int) ystep / 16 + tileYOffset)];
@@ -772,12 +769,17 @@ public class Room {
 			
 			//Set instance variables appropriately
 			this.tileList = tileList.toArray (new Sprite[0]);
-			this.tileIdList = tileIdList.toArray (new String[0]);
+			this.tileIdList = new String[tileIdList.size ()];
+			for (int i = 0; i < tileIdList.size (); i++) {
+				String currId = tileIdList.get (i);
+				String[] currSplit = currId.split ("/");
+				this.tileIdList [i] = currSplit [currSplit.length - 1];
+			}
 			
 			//Add collision data for the tilesets
 			collisionData = new boolean[tileIdList.size ()];
 			for (int i = 0; i < collisionData.length; i ++) {
-				TileData workingTile = tileAttributesList.getTile (tileIdList.get (i));
+				TileData workingTile = tileAttributesList.getTile (this.tileIdList [i]);
 				if (workingTile != null) {
 					collisionData [i] = workingTile.isSolid ();
 				} else {
@@ -1153,10 +1155,10 @@ public class Room {
 	public void setGravity (double gravity) {
 		this.gravity = gravity;
 	}
-	public TileAttributesList getTileAttributesList () {
+	public TileAttributesMap getTileAttributesList () {
 		return this.tileAttributesList;
 	}
-	public void setTileAttributesList (TileAttributesList tileAttributesList) {
+	public void setTileAttributesList (TileAttributesMap tileAttributesList) {
 		this.tileAttributesList = tileAttributesList;
 	}
 	public String getRoomName () {

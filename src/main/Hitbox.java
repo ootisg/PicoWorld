@@ -22,6 +22,13 @@ public class Hitbox {
 			return false;
 		}
 	}
+	public boolean contains (int x, int y) {
+		//Returns true if this hitbox contains the given point
+		if (x >= this.x && y >= this.y && x < this.x + this.width && y < this.y + this.width) {
+			return true;
+		}
+		return false;
+	}
 	public double[] checkVectorCollision (Hitbox hitbox, double xTo, double yTo) {
 		//Field collision detection using a hitbox and the coordinates it will be travelling to
 		for (int i = 0; i < 4; i ++) {

@@ -12,7 +12,7 @@ public class MapExit extends GameObject {
 	private boolean active = true;
 	private boolean locked = false;
 	public MapExit () {
-		createHitbox (0, 0, 16, 16);
+		createHitbox (-2, -2, 20, 20);
 	}
 	@Override
 	public void onDeclare () {

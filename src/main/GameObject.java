@@ -370,6 +370,13 @@ public abstract class GameObject extends GameAPI implements Comparable<GameObjec
 		//Returns the y-coordinate of this GameObject
 		return y;
 	}
+	public double getCenterX () {
+		//Returns the x-coordinate of the center of this GameObject
+		return x + hitboxXOffset + (hitbox.width / 2);
+	}
+	public double getCenterY () {
+		return y + hitboxYOffset + (hitbox.height / 2);
+	}
 	public int getHitboxXOffset () {
 		//Returns the x offset of the Hitbox associated with this GameObject
 		return hitboxXOffset;

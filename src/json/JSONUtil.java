@@ -47,8 +47,7 @@ public class JSONUtil {
 				fileString += s.nextLine () + "\n";
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JSONException ("File was not found");
 		}
 		return new JSONObject (fileString);
 	}
