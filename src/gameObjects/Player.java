@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import ai.Pathfinder;
+import gui.InteractBubble;
+import gui.Interactable;
 import gui.StatusBar;
 import items.GameItem;
 import main.GameObject;
@@ -20,6 +22,7 @@ import resources.Sprite;
 import resources.Spritesheet;
 import spriteParsers.JigsawFilter;
 import spriteParsers.PixelParser;
+import visualEffects.Outline;
 
 public class Player extends GameObject implements Damageable {
 	double health = 0;
@@ -53,6 +56,7 @@ public class Player extends GameObject implements Damageable {
 	Sword swordObject;
 	Sprite[] swordSprites;
 	SmallCollider sc;
+	InteractBubble bubble;
 	public Player () {
 		this.setSprite (getSprites ().playerIdle);
 		this.armSprite = getSprites ().playerArmsIdle;
@@ -65,6 +69,8 @@ public class Player extends GameObject implements Damageable {
 		this.healthBar = new StatusBar (new Sprite (new Spritesheet ("resources/sprites/itemhealth.png"), 16, 1));
 		this.manaBar = new StatusBar (new Sprite (new Spritesheet ("resources/sprites/manabar.png"), 16, 1));
 		statusBars = new LinkedList<StatusBar> ();
+		bubble = new InteractBubble (32);
+		bubble.declare (0, 0);
 		setMaxHealth (50);
 		setHealth (50);
 		setMaxMana (50);
@@ -73,6 +79,7 @@ public class Player extends GameObject implements Damageable {
 	}
 	@Override
 	public void frameEvent () {
+		bubble.setCenter (getCenterX (), getCenterY ());
 		if (invulTime != 0) {
 			invulTime --;
 		}
@@ -164,7 +171,7 @@ public class Player extends GameObject implements Damageable {
 						}
 					}
 				} else {
-					interactedObject.interact ();
+					interactedObject.click ();
 				}
 			}
 			double x = this.getX ();

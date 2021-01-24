@@ -66,7 +66,6 @@ public class Spritesheet implements Resource {
 		for (int i = 0; i < Math.floor (sheetHeight / height); i ++) {
 			for (int c = 0; c < Math.floor (sheetWidth / width); c ++) {
 				imageArray [i * (sheetWidth / width) + c] = new Sprite (this.getImage ().getSubimage (c * width, i * height, width, height));
-				System.out.println ((i * (sheetWidth / width) + c) + ", " + (c * width) + ", " + (i * height));
 			}
 		}
 		return imageArray;

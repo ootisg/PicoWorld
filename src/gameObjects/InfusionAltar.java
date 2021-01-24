@@ -3,6 +3,7 @@ package gameObjects;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import gui.Interactable;
 import items.GameItem;
 import items.MagicPiece;
 import items.SpeckledStone;
@@ -37,7 +38,7 @@ public class InfusionAltar extends GameObject implements Interactable {
 	}
 	
 	@Override
-	public void interact () {
+	public void click () {
 		if (item == null) {
 			ArrayList<GameItem> infusableItems = getGui ().getItemMenu ().filter ("infusable", "true");
 			if (infusableItems.size () != 0) {
@@ -84,5 +85,22 @@ public class InfusionAltar extends GameObject implements Interactable {
 		if (item != null) {
 			item.draw ((int)getX () - getRoom ().getViewX (), (int)getY () - getRoom ().getViewY ());
 		}
+	}
+
+	@Override
+	public void hover () {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unhover () {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean useDefaultHover () {
+		return true;
 	}
 }

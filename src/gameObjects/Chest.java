@@ -2,6 +2,7 @@ package gameObjects;
 
 import java.io.IOException;
 
+import gui.Interactable;
 import items.GameItem;
 import items.ItemDrop;
 import main.GameObject;
@@ -13,7 +14,7 @@ public class Chest extends Saveable implements Interactable {
 		createHitbox (0, 0, 32, 32);
 	}
 	@Override
-	public void interact () {
+	public void click () {
 		try {
 			GameItem droppedItem = (GameItem)(Class.forName ("items." + getVariantAttribute ("contents")).newInstance ());
 			new ItemDrop (droppedItem).declare (getX (), getY ());
@@ -43,5 +44,19 @@ public class Chest extends Saveable implements Interactable {
 		if (getSaveData () != null) {
 			forget ();
 		}
+	}
+	@Override
+	public void hover () {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void unhover () {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public boolean useDefaultHover () {
+		return true;
 	}
 }

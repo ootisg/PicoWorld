@@ -2,6 +2,7 @@ package gameObjects;
 
 import java.util.ArrayList;
 
+import gui.Interactable;
 import main.GameObject;
 import main.MainLoop;
 import resources.Sprite;
