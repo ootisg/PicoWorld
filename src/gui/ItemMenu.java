@@ -32,6 +32,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 	private MappedUi statWindow;
 	
 	Layout[] pageLayouts;
+	Layout tabLayout;
 	
 	private int selectedWeapon;
 	private int selectedSpell;
@@ -63,6 +64,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		pageLayouts = new Layout[numTabs];
 		
 		//Initialize page metadata
+		tabLayout = new Layout (tabs);
 		for (int i = 0; i < numTabs; i++) {
 			JSONObject currentTab = (JSONObject)tabs.get (i);
 			String currentName = currentTab.getString ("name");
@@ -77,13 +79,6 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 			pageNames [i] = currentName;
 			pageIcons [i] = iconSprite;
 		}
-		/*items = new GameItem[numPages][selectionWidth * selectionHeight];
-		pageIcons = new Sprite[numPages];
-		pageIcons [0] = new Sprite ("resources/sprites/weapon_icon.png");
-		pageIcons [1] = new Sprite ("resources/sprites/equipment_icon.png");
-		pageIcons [2] = new Sprite ("resources/sprites/consumable_icon.png");
-		pageIcons [3] = new Sprite ("resources/sprites/material_icon.png");
-		pageIcons [4] = new Sprite ("resources/sprites/spell_icon.png");*/
 		itemHealth = new Sprite (new Spritesheet ("resources/sprites/itemhealth.png"), 16, 1);
 		selectIndex = 4;
 		pageIndex = 0;
@@ -98,6 +93,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		
 		addItem (new GoldSword ());
 	}
+	
 	public boolean addItem (GameItem item) {
 		for (int i = 0; i < items [GameItem.getValue (item.getType ())].length; i ++) {
 			if (items [GameItem.getValue (item.getType ())][i] == null) {
@@ -107,113 +103,72 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return false;
 	}
-	@Override
-	public void keyEvent (char c) {
-		if (c == KeyEvent.VK_SPACE) {
-			if (pageIndex == GameItem.getValue (ItemType.WEAPON)) {
-				selectedWeapon = selectIndex;
-			}
-			if (pageIndex == GameItem.getValue (ItemType.CONSUMABLE)) {
-				items [pageIndex][selectIndex].use ();
-			}
-			if (pageIndex == GameItem.getValue (ItemType.SPELL)) {
-				selectedSpell = selectIndex;
-			}
-		}
-		if (keyCheck (KeyEvent.VK_SHIFT)) {
-			switch (c) {
-				case 'W':
-					if (pageIndex == 0) {
-						pageIndex = numPages - 1;
-					} else {
-						pageIndex --;
-					}
-					break;
-				case 'A':
-					selectIndex = selectIndex % selectionHeight;
-					break;
-				case 'S':
-					if (pageIndex == numPages - 1) {
-						pageIndex = 0;
-					} else {
-						pageIndex ++;
-					}
-					break;
-				case 'D':
-					selectIndex = selectIndex % selectionHeight + (selectionWidth - 1) * selectionHeight;
-					break;
-			}
-		} else {
-			switch (c) {
-				case 'W':
-					if (selectIndex % selectionHeight == 0) {
-						selectIndex += selectionHeight - 1;
-						if (pageIndex == 0) {
-							pageIndex = numPages - 1;
-						} else {
-							pageIndex --;
-						}
-					} else {
-						selectIndex --;
-					}
-					break;
-				case 'A':
-					if (selectIndex / selectionHeight == 0) {
-						selectIndex += selectionHeight * (selectionWidth - 1);
-					} else {
-						selectIndex -= selectionHeight;
-					}
-					break;
-				case 'S':
-					if (selectIndex % selectionHeight == selectionHeight - 1) {
-						selectIndex -= selectionHeight - 1;
-						if (pageIndex == numPages - 1) {
-							pageIndex = 0;
-						} else {
-							pageIndex ++;
-						}
-					} else {
-						selectIndex ++;
-					}
-					break;
-				case 'D':
-					if (selectIndex / selectionHeight == selectionWidth - 1) {
-						selectIndex -= selectionHeight * (selectionWidth - 1);
-					} else {
-						selectIndex += selectionHeight;
-					}
-					break;
-			}
-		}
-	}
+	
 	@Override
 	public void guiFrame () {
+		
+		//Run the parent's guiFrame
 		super.guiFrame ();
+		
+		//Get the selected cells
+		int pageId = tabLayout.getCellContainingPoint (getMouseX (), getMouseY ());
+		int cellId = pageLayouts [pageIndex].getCellContainingPoint (getMouseX (), getMouseY ());
+
+		//Set selections accordingly
+		//Page selection
+		if (pageId != -1 && mouseClicked ()) {
+			pageIndex = pageId;
+		}
+		//Item selection
+		if (cellId != -1) {
+			//Select the hovered cell
+			selectIndex = cellId;
+			//Use the item if clicked
+			if (mouseClicked () && items [pageIndex][selectIndex] != null) {
+				if (pageIndex == GameItem.getValue (ItemType.WEAPON)) {
+					selectedWeapon = selectIndex;
+				}
+				if (pageIndex == GameItem.getValue (ItemType.CONSUMABLE)) {
+					items [pageIndex][selectIndex].use ();
+				}
+				if (pageIndex == GameItem.getValue (ItemType.SPELL)) {
+					selectedSpell = selectIndex;
+				}
+			}
+		}
+		
 	}
+	
 	public GameItem[][] getItems () {
 		return items;
 	}
+	
 	public int getSelectedPageIndex () {
 		return pageIndex;
 	}
+	
 	public int getSelectedItemIndex () {
 		return selectIndex;
 	}
+	
 	public GameItem getEquippedWeapon () {
 		if (selectedWeapon == -1) {
 			return null;
 		}
 		return items [GameItem.getValue (ItemType.WEAPON)][selectedWeapon];
 	}
+	
 	public GameItem getEquippedSpell () {
 		if (selectedSpell == -1) {
 			return null;
 		}
 		return items [GameItem.getValue (ItemType.SPELL)][selectedSpell];
 	}
+	
 	public void setItems (GameItem[][] items) {
 		this.items = items;
 	}
+	
 	public ArrayList<GameItem> filter (String propertyName, String propertyValue) {
 		ArrayList<GameItem> filteredItems = new ArrayList<GameItem> ();
 		for (int i = 0; i < items.length; i ++) {
@@ -225,6 +180,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return filteredItems;
 	}
+	
 	public static ArrayList<GameItem> filter (ArrayList<GameItem> items, String propertyName, String propertyValue) {
 		ArrayList<GameItem> filteredItems = new ArrayList<GameItem> ();
 		for (int i = 0; i < items.size (); i++) {
@@ -234,12 +190,16 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return filteredItems;
 	}
+	
 	@Override
 	public void renderBackground () {
 		this.getSprite ().draw ((int)this.getX (), (int)this.getY ());
 	}
+	
 	@Override
 	public void renderElements () {
+		
+		//Render the items in the inventory
 		for (int i = 0; i < items [0].length; i ++) {
 			if (items [pageIndex][i] != null) {
 				if (!Double.isNaN (items [pageIndex][i].getHealth ())) {
@@ -250,19 +210,27 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 				items [pageIndex][i].draw ((int)getX () + (1 + i / selectionHeight) * 16, (int)getY () + (1 + i % selectionHeight) * 16);
 			}
 		}
+		
+		//Render the page icons
 		for (int i = 0; i < pageIcons.length; i ++) {
 			if (pageIcons [i] != null) {
 				pageIcons [i].draw ((int)getX (), (int)getY () + i * 16);
 			}
 		}
+		
+		//Draw the selection graphic for the item and page
 		getSprites ().selectedBorder.draw ((int)getX () + (1 + selectIndex / selectionHeight) * 16, (int)getY () + (1 + selectIndex % selectionHeight) * 16);
 		getSprites ().selectedBorder.draw ((int)getX (), (int)getY () + pageIndex * 16);
+		
+		//Draw 'equipped' icon
 		if (pageIndex == GameItem.getValue (ItemType.WEAPON) && selectedWeapon != -1) {
 			drawText ("E", (1 + selectedWeapon / selectionHeight) * 16 + 4, (1 + selectedWeapon % selectionHeight) * 16 + 4);
 		}
 		if (pageIndex == GameItem.getValue (ItemType.SPELL) && selectedSpell != -1) {
 			drawText ("E", (1 + selectedSpell / selectionHeight) * 16 + 4, (1 + selectedSpell % selectionHeight) * 16 + 4);
 		}
+		
+		//Draw the selected item's name
 		if (items [pageIndex][selectIndex] != null) {
 			String itemName;
 			if (items [pageIndex][selectIndex].getProperty ("displayName").equals ("")) {
@@ -272,6 +240,8 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 			}
 			drawText (itemName.toUpperCase (), 18, 4);
 		}
+		
+		//Render the item stat window
 		if (pageIndex == GameItem.getValue (ItemType.WEAPON) && items [pageIndex][selectIndex] != null) {
 			String healthText = ((int)items [pageIndex][selectIndex].getHealth ()) + "/" + items [pageIndex][selectIndex].getProperty ("maxHealth");
 			if (items [pageIndex][selectIndex].getProperty ("health").equals ("null")) {
@@ -304,6 +274,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 			}
 		}
 	}
+	
 	@Override
 	public boolean hasItem (GameItem item) {
 		//TODO deep compare
@@ -318,6 +289,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return false;
 	}
+	
 	@Override
 	public boolean hasSimilar (GameItem item) {
 		//TODO deep compare
@@ -332,6 +304,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return false;
 	}
+	
 	@Override
 	public int numItems (GameItem item) {
 		int count = 0;
@@ -346,6 +319,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return count;
 	}
+	
 	@Override
 	public int numSimilar (GameItem item) {
 		int count = 0;
@@ -360,6 +334,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return count;
 	}
+	
 	@Override
 	public boolean removeItem (GameItem item) {
 		GameItem equipped = getEquippedWeapon ();
@@ -388,6 +363,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return false;
 	}
+	
 	@Override
 	public boolean removeSimilar (GameItem item) {
 		GameItem equipped = getEquippedWeapon ();
@@ -416,6 +392,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return false;
 	}
+	
 	@Override
 	public GameItem getSimilar (GameItem item) {
 		for (int i = 0; i < items.length; i ++) {
@@ -429,6 +406,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return null;
 	}
+	
 	@Override
 	public boolean replace (GameItem oldItem, GameItem newItem) {
 		for (int i = 0; i < items.length; i ++) {
@@ -443,10 +421,12 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		}
 		return false;
 	}
+	
 	@Override
 	public void setItem (int index, GameItem item) {
 		//TODO index mapping
 	}
+	
 	@Override
 	public GameItem getItem (int index) {
 		//TODO index mapping
