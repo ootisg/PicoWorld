@@ -78,7 +78,11 @@ public class ObjectMatrix {
 		for (int i = 0; i < objects.size (); i ++) {
 			if (objects.get (i).isDeclared ()) {
 				if (MainLoop.isPaused ()) {
-					objects.get (i).pauseEvent ();
+					if (objects.get (i).ignoresPause ()) {
+						objects.get (i).frameEvent ();
+					} else {
+						objects.get (i).pauseEvent ();
+					}
 				} else {
 					objects.get (i).frameEvent ();
 				}

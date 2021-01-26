@@ -6,6 +6,18 @@ import gameObjects.Particle;
 
 public class ParticleMaker {
 
+	private double minAng = 0;
+	private double maxAng = Math.PI * 2;
+	private double minSpeed = 0;
+	private double maxSpeed = 0;
+	private int minLife = 30;
+	private int maxLife = 30;
+	private int minSize = 1;
+	private int maxSize = 1;
+	private Color color1 = new Color (0x000000);
+	private Color color2 = new Color (0x000000);
+	private boolean useWhilePaused = false;
+	
 	public Particle makeParticle (int x, int y) {
 		
 		//Generate motion/decay values
@@ -25,20 +37,10 @@ public class ParticleMaker {
 		
 		//Generate the particle
 		Particle p = new Particle (x, y, color, size, life, ang, speed);
+		p.setIgnorePause (useWhilePaused);
 		return p;
 		
 	}
-	
-	private double minAng = 0;
-	private double maxAng = Math.PI * 2;
-	private double minSpeed = 0;
-	private double maxSpeed = 0;
-	private int minLife = 30;
-	private int maxLife = 30;
-	private int minSize = 1;
-	private int maxSize = 1;
-	private Color color1 = new Color (0x000000);
-	private Color color2 = new Color (0x000000);
 	
 	public double getMinAng () {
 		return minAng;
@@ -143,6 +145,10 @@ public class ParticleMaker {
 	public void setColor (Color c) {
 		color1 = c;
 		color2 = color1;
+	}
+	
+	public void setParticlesIgnorePause (boolean ignorePause) {
+		useWhilePaused = ignorePause;
 	}
 	
 	private double randomBetween (double a, double b) {

@@ -17,6 +17,7 @@ import main.MainLoop;
 public class TextEvent extends TimedEvent {
 	
 	TextGenerator text = null;
+	int prevLength = -1;
 
 	@Override
 	public void doFrame () {
@@ -92,6 +93,10 @@ public class TextEvent extends TimedEvent {
 		}
 		
 		//Draw text
+		if (prevLength != text.getText ().length ()) {
+			MainLoop.getWindow ().playSound ("resources/sounds/letter_trimmed.wav");
+		}
+		prevLength = text.getText ().length ();
 		g.drawString (text.getText (), params.getInt ("xPos"), params.getInt ("yPos"));
 	}
 	

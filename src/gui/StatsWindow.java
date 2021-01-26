@@ -17,7 +17,8 @@ public class StatsWindow extends MappedUi {
 		super (new Spritesheet ("resources/sprites/gui_background.png"), new int[0][0]);
 	}
 	
-	@Override public void renderGui () {
+	@Override
+	public void renderGui () {
 		ArrayList<String> lines = new ArrayList<String> ();
 		//Add stats to the stats window
 		lines.add ("HEALTH: " + (int)getPlayer ().getHealth () + "/" + (int)getPlayer ().getMaxHealth ());

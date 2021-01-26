@@ -1,0 +1,209 @@
+{
+	"objs": [
+		{
+			"id":"overlay",
+			"type":"ParticleOverlay",
+			"gen": {
+				"genMethod":"make",
+				"startX":0,
+				"startY":0,
+				"params":[]
+			}
+		}
+	],
+	"events": [
+		{
+			"id":"startPause",
+			"type":"WaitEvent",
+			"duration":800
+		},
+		{
+			"id":"wind",
+			"type":"SoundEvent",
+			"params": {
+				"path":"resources/sounds/wind01.wav"
+			},
+			"startTrigger": {
+				"eventId":"startPause",
+				"type":"end"
+			},
+			"endTrigger": {
+				"eventId":"fadesound",
+				"type":"end"
+			}
+		},
+		{
+			"id":"particles1",
+			"type":"OverlayEvent",
+			"duration":6000,
+			"params": {
+				"type":"ParticleOverlay",
+				"minAng":1.04719,
+				"maxAng":2.09439,
+				"minSpeed":1.0,
+				"maxSpeed":2.0,
+				"minSize":1,
+				"maxSize":3,
+				"color1":6291520,
+				"color2":0
+			},
+			"startTrigger": {
+				"eventId":"startPause",
+				"type":"end"
+			}
+		},
+		{
+			"id":"flashPause1",
+			"type":"WaitEvent",
+			"duration":600,
+			"startTrigger": {
+				"eventId":"startPause",
+				"type":"end"
+			}
+		},
+		{
+			"id":"flash1",
+			"type":"OverlayEvent",
+			"duration":20000,
+			"params": {
+				"type":"ColorOverlay",
+				"color": {
+					"red":0,
+					"green":0,
+					"blue":0,
+					"alpha":191
+				}
+			},
+			"startTrigger": {
+				"eventId":"flashPause1",
+				"type":"end"
+			},
+			"endTrigger": {
+				"eventId":"fadesound",
+				"type":"end"
+			}
+		},
+		{
+			"id":"particles2",
+			"type":"OverlayEvent",
+			"duration":6000,
+			"params": {
+				"type":"ParticleOverlay",
+				"minAng":1.04719,
+				"maxAng":2.09439,
+				"minSpeed":5.0,
+				"maxSpeed":8.0,
+				"minSize":2,
+				"maxSize":3,
+				"color1":6291520,
+				"color2":0
+			},
+			"startTrigger": {
+				"eventId":"flashPause1",
+				"type":"end"
+			}
+		},
+		{
+			"id":"flashPause2",
+			"type":"WaitEvent",
+			"duration":3000,
+			"startTrigger": {
+				"eventId":"flashPause1",
+				"type":"end"
+			}
+		},
+		{
+			"id":"flash2",
+			"type":"OverlayEvent",
+			"duration":250,
+			"params": {
+				"type":"ColorOverlay",
+				"color": {
+					"red":0,
+					"green":0,
+					"blue":0,
+					"alpha":255
+				}
+			},
+			"startTrigger": {
+				"eventId":"flashPause2",
+				"type":"end"
+			}
+		},
+		{
+			"id":"flashsound1",
+			"type":"SoundEvent",
+			"params": {
+				"path":"resources/sounds/my_static.wav",
+			},
+			"startTrigger": {
+				"eventId":"flashPause1",
+				"type":"end"
+			}
+		},
+		{
+			"id":"flashsound2",
+			"type":"SoundEvent",
+			"params": {
+				"path":"resources/sounds/my_static.wav",
+			},
+			"startTrigger": {
+				"eventId":"flashPause2",
+				"type":"end"
+			}
+		},
+		{
+			"id":"flashsound3",
+			"type":"SoundEvent",
+			"params": {
+				"path":"resources/sounds/my_static.wav",
+			},
+			"startTrigger": {
+				"eventId":"flashPause3",
+				"type":"end"
+			}
+		},
+		{
+			"id":"fadesound",
+			"type":"SoundEvent",
+			"params": {
+				"path":"resources/sounds/long_static.wav",
+			},
+			"startTrigger": {
+				"eventId":"flashPause3",
+				"type":"end"
+			}
+		},
+		{
+			"id":"flashPause3",
+			"type":"WaitEvent",
+			"duration":400,
+			"startTrigger": {
+				"eventId":"flash2",
+				"type":"end"
+			}
+		},
+		{
+			"id":"flash3",
+			"type":"OverlayEvent",
+			"duration":10000,
+			"params": {
+				"type":"ColorOverlay",
+				"color": {
+					"red":0,
+					"green":0,
+					"blue":0,
+					"alpha":255
+				}
+			},
+			"startTrigger": {
+				"eventId":"flashPause3",
+				"type":"end"
+			},
+			"endTrigger": {
+				"eventId":"fadesound",
+				"type":"end"
+			}
+		},
+	]
+}

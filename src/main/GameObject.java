@@ -26,6 +26,7 @@ public abstract class GameObject extends GameAPI implements Comparable<GameObjec
 	private boolean flipVertical = false;
 	private boolean isDeclared = false;
 	private boolean persistent = false;
+	private boolean ignorePause = false;
 	public void declare (double x, double y) {
 		//Adds this GameObject to the object matrix
 		matrixLocation = MainLoop.getObjectMatrix ().add (this);
@@ -120,6 +121,14 @@ public abstract class GameObject extends GameAPI implements Comparable<GameObjec
 		hitboxXOffset = xoffset;
 		hitboxYOffset = yoffset;
 		hitbox = new Hitbox ((int) x + xoffset, (int) y + yoffset, width, height);
+	}
+	public void setIgnorePause (boolean ignorePause) {
+		//Causes this object to ignore the effects of pausing
+		this.ignorePause = ignorePause;
+	}
+	public boolean ignoresPause () {
+		//Returns true if this object ignores pausing; false otherwise
+		return ignorePause;
 	}
 	public Hitbox getHitbox () {
 		//Returns the hitbox object associated with this GameObject

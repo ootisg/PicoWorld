@@ -49,7 +49,7 @@ public abstract class GuiComponent extends GameObject {
 	}
 	@Override
 	public void pauseEvent () {
-		if (!isHidden ()) {
+		if (!isHidden () && getGui ().guiOpen ()) {
 			if (focus) {
 				boolean[] charsOnFrame = MainLoop.getWindow ().keysPressedOnFrame;
 				for (int i = 0; i < charsOnFrame.length; i ++) {
@@ -66,7 +66,7 @@ public abstract class GuiComponent extends GameObject {
 	}
 	@Override
 	public void draw () {
-		if (MainLoop.isPaused ()) {
+		if (getGui ().guiOpen ()) {
 			renderBackground ();
 			renderElements ();
 		}

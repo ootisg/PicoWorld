@@ -20,6 +20,7 @@ public class Gui extends GameObject {
 	private StatsWindow statsWindow;
 	private Textbox tbox;
 	private MagicContainer magicContainer;
+	private boolean guiOpen;
 	public Gui () {
 		this.declare (0, 0);
 		this.itemMenu = new ItemMenu (0, 0);
@@ -40,9 +41,14 @@ public class Gui extends GameObject {
 	public void frameEvent () {
 		pauseCooldown --;
 		if (keyPressed ('E') && pauseCooldown <= 0) {
+			
+			//Pause the game
 			MainLoop.pause ();
+			
+			//Open the item menu
 			itemMenu.setHidden (false);
 			pauseCooldown = 10;
+			openGui ();
 		}
 		if (keyPressed ('\\')) {
 			getSave ().writeToFile ();
@@ -66,6 +72,7 @@ public class Gui extends GameObject {
 			craftingMenu.unfocus ();
 			craftingMenu.setHidden (true);
 			pauseCooldown = 10;
+			closeGui ();
 			MainLoop.resume ();
 		}
 	}
@@ -73,6 +80,15 @@ public class Gui extends GameObject {
 		for (int i = 0; i < text.length (); i ++) {
 			textInterface.drawChar (text.charAt (i), x + i * 8, y);
 		}
+	}
+	public void openGui () {
+		guiOpen = true;
+	}
+	public void closeGui () {
+		guiOpen = false;
+	}
+	public boolean guiOpen () {
+		return guiOpen;
 	}
 	public ItemMenu getItemMenu () {
 		return itemMenu;

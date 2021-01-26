@@ -29,7 +29,7 @@ public class MappedUi extends GuiComponent {
 	}
 	@Override
 	public void draw () {
-		if (MainLoop.isPaused () && map != null) {
+		if (getGui ().guiOpen () && map != null) {
 			if (map.length > 0) {
 				for (int i = 0; i < map.length; i ++) {
 					for (int j = 0; j < map[0].length; j ++) {

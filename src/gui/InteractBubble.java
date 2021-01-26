@@ -101,6 +101,16 @@ public class InteractBubble extends GameObject {
 					}
 				}
 			}
+			
+			//Unselect the hovered object if it has been forgotten
+			if (hoveredObj != null && !hoveredObj.isDeclared ()) {
+				if (((Interactable)hoveredObj).useDefaultHover ()) {
+					defaultUnhover ((Interactable)hoveredObj);
+				} else {
+					((Interactable)hoveredObj).unhover ();
+				}
+				hoveredObj = null;
+			}
 		}
 	}
 	

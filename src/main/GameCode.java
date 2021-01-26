@@ -24,6 +24,7 @@ import gameObjects.SmallCollider;
 import gameObjects.TestEnemy;
 import gameObjects.Tree;
 import items.*;
+import music.MusicPlayer;
 import projectiles.PlayerMagic;
 import puzzle.LightFocuser;
 import puzzle.LightSwitch;
@@ -85,7 +86,7 @@ public class GameCode extends GameAPI {
 		//ov.declare (0, 0);
 		//ParticleOverlay pov = new ParticleOverlay (null);
 		//pov.declare (0, 0);
-		//MainLoop.getWindow ().playSoundForever ("resources/sounds/copyrighted_placeholder_music.wav");
+		MusicPlayer.playSong ("resources/sounds/copyrighted_placeholder_music.wav");
 	}
 	public void gameLoop () {
 		//Saveable.printSaves ();

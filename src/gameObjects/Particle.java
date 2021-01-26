@@ -26,7 +26,6 @@ public class Particle extends GameObject {
 		this.direction = 0;
 		this.speed = 0;
 		computeVectors ();
-		System.out.println(size);
 	}
 	public Particle (double x, double y, Color color, int size, double durability, double direction, double speed) {
 		this.declare (x, y);
@@ -65,7 +64,6 @@ public class Particle extends GameObject {
 		Color c = this.color;
 		if (durability < fadePoint) {
 			double percentFade = ((double)durability / fadePoint);
-			System.out.println((int)(color.getAlpha () * percentFade));
 			c = new Color (color.getRed (), color.getGreen (), color.getBlue (), (int)(color.getAlpha () * percentFade));
 		}
 		MainLoop.getWindow ().getBufferGraphics ().setColor (c);

@@ -114,7 +114,6 @@ public class Cutscene extends GameObject {
 			}
 		}
 		
-		events.get (0).start ();
 		declare (0, 0);
 	}
 	
@@ -183,7 +182,7 @@ public class Cutscene extends GameObject {
 			if (events.get (i) == e && i < events.size () - 1) {
 				Event next = events.get (i + 1);
 				JSONObject nextArgs = next.getArgs ();
-				JSONObject nextTrigger = nextArgs.getJSONObject ("trigger");
+				JSONObject nextTrigger = nextArgs.getJSONObject ("startTrigger");
 				if (nextTrigger == null) {
 					startEvent (next);
 					break;
@@ -243,6 +242,11 @@ public class Cutscene extends GameObject {
 				curr.doFrame ();
 			}
 		}
+	}
+	
+	@Override
+	public void pauseEvent () {
+		frameEvent ();
 	}
 	
 	@Override

@@ -346,6 +346,10 @@ public class GameWindow extends JFrame {
 			return clip;
 		}
 		
+		public void stop () {
+			clip.close ();
+		}
+		
 		public void setStatus (int status) {
 			this.status = status;
 		}
