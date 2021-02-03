@@ -41,6 +41,8 @@ public class GameCode extends GameAPI {
 		getSave ().setFile ("saves/save.txt");
 		//Create the global save data
 		new GlobalSave ().declare (0, 0);
+		//Make the music player so music can be played
+		new MusicPlayer ();
 		//Load the starting room
 		try {
 			//getRoom ().loadRoom ("resources/maps/testmap3.cmf");
@@ -86,7 +88,6 @@ public class GameCode extends GameAPI {
 		//ov.declare (0, 0);
 		//ParticleOverlay pov = new ParticleOverlay (null);
 		//pov.declare (0, 0);
-		MusicPlayer.playSong ("resources/sounds/copyrighted_placeholder_music.wav");
 	}
 	public void gameLoop () {
 		//Saveable.printSaves ();

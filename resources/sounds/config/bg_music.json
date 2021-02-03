@@ -1,0 +1,10 @@
+{
+"overworld": {
+	"path":"resources/sounds/copyrighted_placeholder_music.wav",
+	"delay":500
+},
+"cave_1": {
+	"path":"resources/sounds/music/cave.wav",
+	"delay":500
+}
+}

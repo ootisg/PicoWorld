@@ -1,3 +1,0 @@
-type;nv,fire,ice:variant
-facing;forward,backward:frame/4
-orientation;bottom,right,top,left:frame%4

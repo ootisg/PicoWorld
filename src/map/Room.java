@@ -19,6 +19,7 @@ import main.GameObject;
 import main.Hitbox;
 import main.MainLoop;
 import main.ObjectMatrix;
+import music.MusicPlayer;
 import resources.Sprite;
 import resources.Spritesheet;
 
@@ -869,6 +870,10 @@ public class Room {
 		
 		//I haven't a goddamn clue what this does
 		mapUnits.clear ();
+		
+		//Play the current music
+		MusicPlayer.stop ();
+		MusicPlayer.playCurrentMapSong ();
 	}
 	public void loadCMF (String path) throws FileNotFoundException {
 		String previousName = roomName;
