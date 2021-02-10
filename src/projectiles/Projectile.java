@@ -2,6 +2,7 @@ package projectiles;
 
 import gameObjects.DamageSource;
 import main.GameObject;
+import util.Vector2D;
 
 public abstract class Projectile extends GameObject implements DamageSource {
 	private double velocityX = 1;
@@ -14,6 +15,12 @@ public abstract class Projectile extends GameObject implements DamageSource {
 	public static final double DIRECTION_UP = Math.PI / 2;
 	public static final double DIRECTION_LEFT = Math.PI;
 	public static final double DIRECTION_DOWN = (Math.PI * 3) / 2;
+	
+	public static final Vector2D VEC_DIRECTION_NONE = new Vector2D (0, 0);
+	public static final Vector2D VEC_DIRECTION_RIGHT = new Vector2D (1, 0);
+	public static final Vector2D VEC_DIRECTION_UP = new Vector2D (0, -1);
+	public static final Vector2D VEC_DIRECTION_LEFT = new Vector2D (-1, 0);
+	public static final Vector2D VEC_DIRECTION_DOWN = new Vector2D (0, 1);
 	
 	@Override
 	public void frameEvent () {

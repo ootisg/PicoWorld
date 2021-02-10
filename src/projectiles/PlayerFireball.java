@@ -8,10 +8,6 @@ public class PlayerFireball extends PlayerProjectile {
 	
 	private static final double speed = 10;
 	
-	private static final int numParticles = 100;
-	
-	private static final int fieldSize = 16;
-	
 	public PlayerFireball (double direction) {
 		super ();
 		setVelocityX (speed * Math.cos (direction));

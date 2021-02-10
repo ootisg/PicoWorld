@@ -16,12 +16,14 @@ import gui.StatusBar;
 import items.GameItem;
 import main.GameObject;
 import main.MainLoop;
+import projectiles.MagicRing;
 import projectiles.PlayerMagic;
 import projectiles.Projectile;
 import resources.Sprite;
 import resources.Spritesheet;
 import spriteParsers.JigsawFilter;
 import spriteParsers.PixelParser;
+import util.Vector2D;
 import visualEffects.Outline;
 
 public class Player extends GameObject implements Damageable {
@@ -46,6 +48,12 @@ public class Player extends GameObject implements Damageable {
 	public static final int DIRECTION_DOWN = 2;
 	public static final int DIRECTION_RIGHT = 3;
 	public static final double[] RADIAN_DIRECTION_MAP = new double[] {Projectile.DIRECTION_UP, Projectile.DIRECTION_LEFT, Projectile.DIRECTION_DOWN, Projectile.DIRECTION_RIGHT};
+	public static final Vector2D[] VECTOR_DIRECTION_MAP = new Vector2D[] {
+			Projectile.VEC_DIRECTION_UP,
+			Projectile.VEC_DIRECTION_LEFT,
+			Projectile.VEC_DIRECTION_DOWN,
+			Projectile.VEC_DIRECTION_RIGHT
+	};
 	private static final int[] WEAPON_OFFSETS = new int[] {0, -4, -4, 0, 0, 0, 0, 0};
 	private static ArrayList<Point> weaponOffsets;
 	private static StatusBar healthBar;
@@ -82,6 +90,9 @@ public class Player extends GameObject implements Damageable {
 		bubble.setCenter (getCenterX (), getCenterY ());
 		if (invulTime != 0) {
 			invulTime --;
+		}
+		if (keyPressed ('V')) {
+			new MagicRing ().declare (getX (), getY ());
 		}
 		if (keyPressed (KeyEvent.VK_SHIFT)) {
 			if (magicSelected) {
