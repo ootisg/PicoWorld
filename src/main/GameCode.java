@@ -23,6 +23,7 @@ import gameObjects.Saveable;
 import gameObjects.SmallCollider;
 import gameObjects.TestEnemy;
 import gameObjects.Tree;
+import gui.ColorMap;
 import items.*;
 import music.MusicPlayer;
 import projectiles.PlayerMagic;
@@ -88,6 +89,11 @@ public class GameCode extends GameAPI {
 		//ov.declare (0, 0);
 		//ParticleOverlay pov = new ParticleOverlay (null);
 		//pov.declare (0, 0);
+		ColorMap cm = new ColorMap ();
+		cm.addColor (new Color (0x008000), 0);
+		cm.addColor (new Color (0xFFFF00), .5);
+		cm.addColor (new Color (0xFF0000), 1);
+		System.out.println (cm.getColor (.75));
 	}
 	public void gameLoop () {
 		//Saveable.printSaves ();

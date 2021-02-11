@@ -1,5 +1,7 @@
 package projectiles;
 
+import java.awt.Point;
+
 import main.MainLoop;
 import resources.Sprite;
 import resources.Spritesheet;
@@ -38,12 +40,11 @@ public class MagicRing extends PlayerProjectile {
 	public void projectileFrame () {
 		
 		//Get the displacement vector
-		int adjustedMouseX = getMouseX () + getRoom ().getViewX ();
-		int adjustedMouseY = getMouseY () + getRoom ().getViewY ();
+		Point target = getTarget ();
 		int centerX = (int)this.getCenterX ();
 		int centerY = (int)this.getCenterY ();
-		int diffX = adjustedMouseX - centerX;
-		int diffY = adjustedMouseY - centerY;
+		int diffX = target.x - centerX;
+		int diffY = target.y - centerY;
 		
 		//Normalize the vector
 		double dist = Math.sqrt (diffX * diffX + diffY * diffY);
@@ -98,6 +99,10 @@ public class MagicRing extends PlayerProjectile {
 		
 		time++;
 		
+	}
+	
+	public Point getTarget () {
+		return new Point (this.getMouseX () + getRoom ().getViewX (), this.getMouseY () + getRoom ().getViewY ());
 	}
 
 }

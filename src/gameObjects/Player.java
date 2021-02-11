@@ -1,6 +1,7 @@
 package gameObjects;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -10,8 +11,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import ai.Pathfinder;
+import gui.ColorMap;
+import gui.HealthBar;
 import gui.InteractBubble;
 import gui.Interactable;
+import gui.ManaBar;
 import gui.StatusBar;
 import items.GameItem;
 import main.GameObject;
@@ -65,6 +69,8 @@ public class Player extends GameObject implements Damageable {
 	Sprite[] swordSprites;
 	SmallCollider sc;
 	InteractBubble bubble;
+	HealthBar healthBar2;
+	ManaBar manaBar2;
 	public Player () {
 		this.setSprite (getSprites ().playerIdle);
 		this.armSprite = getSprites ().playerArmsIdle;
@@ -76,6 +82,10 @@ public class Player extends GameObject implements Damageable {
 		this.swordObject = new Sword ();
 		this.healthBar = new StatusBar (new Sprite (new Spritesheet ("resources/sprites/itemhealth.png"), 16, 1));
 		this.manaBar = new StatusBar (new Sprite (new Spritesheet ("resources/sprites/manabar.png"), 16, 1));
+		this.healthBar2 = new HealthBar ();
+		this.manaBar2 = new ManaBar ();
+		healthBar2.declare (0, 0);
+		manaBar2.declare (0, 16);
 		statusBars = new LinkedList<StatusBar> ();
 		bubble = new InteractBubble (32);
 		bubble.declare (0, 0);
@@ -87,12 +97,20 @@ public class Player extends GameObject implements Damageable {
 	}
 	@Override
 	public void frameEvent () {
+		healthBar2.setMaxFill (maxHealth);
+		healthBar2.setFillAmt (health);
+		manaBar2.setMaxFill (maxMana);
+		manaBar2.setFillAmt (mana);
 		bubble.setCenter (getCenterX (), getCenterY ());
 		if (invulTime != 0) {
 			invulTime --;
 		}
 		if (keyPressed ('V')) {
-			new MagicRing ().declare (getX (), getY ());
+			for (int wx = 0; wx < 32; wx++) {
+				for (int wy = 0; wy < 32; wy++) {
+					new Isopod ().declare (getX () + wx * 32, getY () + wy * 32);
+				}
+			}
 		}
 		if (keyPressed (KeyEvent.VK_SHIFT)) {
 			if (magicSelected) {

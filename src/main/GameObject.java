@@ -408,6 +408,12 @@ public abstract class GameObject extends GameAPI implements Comparable<GameObjec
 	public int[] getDrawCoords () {
 		return new int[] {(int)x - getRoom ().getViewX (), (int)y - getRoom ().getViewY ()};
 	}
+	public boolean isOnScreen () {
+		return 	this.getCenterX () > getRoom ().getViewX () &&
+				this.getCenterY () > getRoom ().getViewY () &&
+				this.getCenterX () < getRoom ().getViewX () + MainLoop.getWindow ().getResolution ()[0] &&
+				this.getCenterY () < getRoom ().getViewY () + MainLoop.getWindow ().getResolution ()[1];
+	}
 	public void drawSprite () {
 		//Draws the Sprite associated with this GameObject
 		if (sprite != null) {

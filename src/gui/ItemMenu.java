@@ -13,6 +13,7 @@ import json.JSONException;
 import json.JSONObject;
 import json.JSONUtil;
 import items.GoldSword;
+import items.HomingRingSpell;
 import items.MagicRingSpell;
 import items.Mushroom;
 import items.MythrilBar;
@@ -94,6 +95,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		
 		addItem (new GoldSword ());
 		addItem (new MagicRingSpell ());
+		addItem (new HomingRingSpell ());
 	}
 	
 	public boolean addItem (GameItem item) {
