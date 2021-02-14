@@ -23,6 +23,12 @@ public class HomingRing extends MagicRing {
 	public HomingRing (Vector2D startVelocity) {
 		super (startVelocity);
 		this.setSprite (ringSprite);
+		this.setDurability (MAX_DRB + 4);
+	}
+	
+	@Override
+	public double getBaseDamage () {
+		return 10;
 	}
 	
 	@Override
@@ -59,7 +65,11 @@ public class HomingRing extends MagicRing {
 			}
 			target = closestEnemy;
 		}
-		return new Point ((int)target.getX (), (int)target.getY ());
+		if (target != null) {
+			return new Point ((int)target.getX (), (int)target.getY ());
+		} else {
+			return null;
+		}
 	}
 
 }

@@ -229,6 +229,29 @@ public abstract class GameObject extends GameAPI implements Comparable<GameObjec
 		}
 		return new ArrayList<GameObject> ();
 	}
+	public ArrayList<GameObject> getCollidingChildren (Class<?> parent) {
+		//Returns (a list of) the objects this gameObject is colliding with
+		ArrayList<GameObject> objs = new ArrayList<GameObject> ();
+		if (this.getHitbox () != null) {
+			ObjectMatrix objectMatrix = MainLoop.getObjectMatrix ();
+			int nameListLength = objectMatrix.classNameList.size ();
+			ArrayList<GameObject> objectList = objectMatrix.getAll (parent);
+			if (objectList != null) {
+				int objectListLength = objectList.size ();
+				for (int i = 0; i < objectListLength; i ++) {
+					if (objectList.get (i) != null && objectList.get (i) != this) {
+						if (objectList.get (i).getHitbox () != null) {
+							if (objectList.get (i).isColliding (this)) {
+								objs.add (objectList.get (i));
+							}
+						}
+					}
+				}
+				return objs;
+			}
+		}
+		return new ArrayList<GameObject> ();
+	}
 	public double[] getCollidingCoords (String objectType, double xTo, double yTo) {
 		//Returns the coordinates at which a collision with this GameObject and an object on the object matrix of type objectType occurs
 		if (this.getHitbox () != null) {

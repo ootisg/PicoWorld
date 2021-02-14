@@ -27,8 +27,20 @@ public interface Damageable {
 	double getHealth ();
 	
 	/**
+	 * Gets the max health of this object.
+	 * @return The max health of this object
+	 */
+	double getMaxHealth ();
+	
+	/**
 	 * Sets the health of this object to the given value.
 	 * @param health The new health of this object
 	 */
 	void setHealth (double health);
+
+	/**
+	 * Sets the max health of this object to the given value.
+	 * @param health The new max health of this object
+	 */
+	void setMaxHealth (double health);
 }

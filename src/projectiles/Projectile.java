@@ -1,6 +1,7 @@
 package projectiles;
 
 import gameObjects.DamageSource;
+import gameObjects.Damageable;
 import main.GameObject;
 import util.Vector2D;
 
@@ -73,5 +74,8 @@ public abstract class Projectile extends GameObject implements DamageSource {
 		} else {
 			return false;
 		}
+	}
+	public void hitEvent (GameObject hitObject) {
+		
 	}
 }

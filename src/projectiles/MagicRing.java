@@ -1,14 +1,19 @@
 package projectiles;
 
+import java.awt.Color;
 import java.awt.Point;
 
+import main.GameObject;
 import main.MainLoop;
 import resources.Sprite;
 import resources.Spritesheet;
 import util.Vector2D;
+import visualEffects.ParticleMaker;
 
 public class MagicRing extends PlayerProjectile {
 
+	public static final int MAX_DRB = 3;
+	
 	public static Spritesheet ringSheet = new Spritesheet ("resources/sprites/magic_ring.png");
 	public static Sprite ringSprite = new Sprite (ringSheet, 16, 16);
 	
@@ -19,11 +24,18 @@ public class MagicRing extends PlayerProjectile {
 	
 	int time = 0;
 	
+	int drb;
+	
+	private Color particleColor;
+	
 	public MagicRing () {
 		super ();
 		setSprite (ringSprite);
 		getAnimationHandler ().setAnimationSpeed (.5);
 		createHitbox (0, 0, 16, 16);
+		
+		drb = MAX_DRB;
+		setParticleColor (new Color (0x000000));
 	}
 	
 	public MagicRing (Vector2D initialVelocity) {
@@ -34,13 +46,17 @@ public class MagicRing extends PlayerProjectile {
 	
 	@Override
 	public double getBaseDamage () {
-		return 10;
+		return 50;
 	}
 	
 	public void projectileFrame () {
 		
 		//Get the displacement vector
 		Point target = getTarget ();
+		if (target == null) {
+			forget ();
+			return;
+		}
 		int centerX = (int)this.getCenterX ();
 		int centerY = (int)this.getCenterY ();
 		int diffX = target.x - centerX;
@@ -103,6 +119,28 @@ public class MagicRing extends PlayerProjectile {
 	
 	public Point getTarget () {
 		return new Point (this.getMouseX () + getRoom ().getViewX (), this.getMouseY () + getRoom ().getViewY ());
+	}
+	
+	public void setDurability (int durability) {
+		drb = durability;
+	}
+	
+	public void setParticleColor (Color particleColor) {
+		this.particleColor = particleColor;
+	}
+	
+	@Override
+	public void hitEvent (GameObject hitObject) {
+		drb--;
+		if (drb == 0) {
+			forget ();
+		}
+	}
+	
+	@Override
+	public void forget () {
+		//Forget this object
+		super.forget ();
 	}
 
 }
