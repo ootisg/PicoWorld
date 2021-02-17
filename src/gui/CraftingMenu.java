@@ -100,7 +100,6 @@ public class CraftingMenu extends MappedUi {
 		}
 		if (workingRecipes.size () == 0) {
 			setMap (buildTileMap (5, 2));
-			return;
 		}
 		int size = workingRecipes.size () + 1;
 		if (size < 2) {
@@ -173,37 +172,32 @@ public class CraftingMenu extends MappedUi {
 		}
 	}
 	@Override
-	public void keyEvent (char c) {
-		if (c == 'W') {
-			selectIndex --;
-			if (selectIndex < 0) {
-				selectIndex = workingRecipes.size () - 1;
+	public void pauseEvent () {
+		super.frameEvent ();
+		if (getMouseX () > getX () && getMouseX () < getX () + getWidth () * 16 && getMouseY () > getY () && getMouseY () < getY () + getHeight () * 16) {
+			int sel = (int)(getMouseY () - getY ()) / 16 - 1;
+			if (sel >= 0 && sel < workingRecipes.size ()) {
+				selectIndex = sel;
 			}
-		}
-		if (c == 'S') {
-			selectIndex ++;
-			if (selectIndex > workingRecipes.size () - 1) {
-				selectIndex = 0;
-			}
-		}
-		if (c == (char)KeyEvent.VK_SPACE) {
-			for (int i = 0; i < workingRecipes.get (selectIndex).getIngredients ().size (); i ++) {
-				GameItem ingredient = workingRecipes.get (selectIndex).getIngredients ().get (i);
-				for (int j = 0; j < inventory.size (); j ++) {
-					if (ingredient instanceof CraftingItem) {
-						if (((CraftingItem) (inventory.get (j).getSimilar (ingredient))).useInCrafting ()) {
+			if (mouseClicked () && workingRecipes.size () != 0) {
+				for (int i = 0; i < workingRecipes.get (selectIndex).getIngredients ().size (); i ++) {
+					GameItem ingredient = workingRecipes.get (selectIndex).getIngredients ().get (i);
+					for (int j = 0; j < inventory.size (); j ++) {
+						if (ingredient instanceof CraftingItem) {
+							if (((CraftingItem) (inventory.get (j).getSimilar (ingredient))).useInCrafting ()) {
+								break;
+							}
+						}
+						if (inventory.get (j).removeSimilar (ingredient)) {
 							break;
 						}
 					}
-					if (inventory.get (j).removeSimilar (ingredient)) {
-						break;
-					}
 				}
+				//TODO Janky solution; pls fix
+				//Also the inventory full case needs to be accounted for
+				inventory.get (0).addItem (workingRecipes.get (selectIndex).getResult ());
+				buildGui ();
 			}
-			//TODO Janky solution; pls fix
-			//Also the inventory full case needs to be accounted for
-			inventory.get (0).addItem (workingRecipes.get (selectIndex).getResult ());
-			buildGui ();
 		}
 	}
 	private String getLongestResultName (ArrayList<CraftingRecipe> recipeList) {
@@ -214,6 +208,9 @@ public class CraftingMenu extends MappedUi {
 				longestName = getDisplayName (recipeList.get (i).getResult ()).length ();
 				longestIndex = i;
 			}
+		}
+		if (recipeList.size () == 0) {
+			return "NULL";
 		}
 		return recipeList.get (longestIndex).getResult ().getName ();
 	}

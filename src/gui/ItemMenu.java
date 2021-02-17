@@ -4,10 +4,12 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import items.Apple;
 import items.Berry;
 import items.Bottle;
 import items.GameItem;
 import items.GameItem.ItemType;
+import items.GoldBar;
 import json.JSONArray;
 import json.JSONException;
 import json.JSONObject;
@@ -17,7 +19,9 @@ import items.HomingRingSpell;
 import items.MagicRingSpell;
 import items.Mushroom;
 import items.MythrilBar;
+import items.SilverBar;
 import items.SilverSword;
+import items.WoodPlanks;
 import resources.Sprite;
 import resources.Spritesheet;
 
@@ -96,6 +100,15 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		addItem (new GoldSword ());
 		addItem (new MagicRingSpell ());
 		addItem (new HomingRingSpell ());
+		
+		addItem (new WoodPlanks ());
+		addItem (new WoodPlanks ());
+		addItem (new WoodPlanks ());
+		addItem (new GoldBar ());
+		addItem (new SilverBar ());
+		addItem (new SilverBar ());
+		addItem (new MythrilBar ());
+		addItem (new Apple ());
 	}
 	
 	public boolean addItem (GameItem item) {

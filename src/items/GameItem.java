@@ -189,7 +189,21 @@ public abstract class GameItem implements Damageable {
 	}
 	
 	@Override
+	public double getMaxHealth () {
+		if (!getProperty ("maxHealth").equals ("")) {
+			return Double.parseDouble (getProperty ("maxHealth"));
+		} else {
+			return Double.NaN;
+		}
+	}
+	
+	@Override
 	public void setHealth (double health) {
 		setProperty ("health", String.valueOf (health));
+	}
+	
+	@Override
+	public void setMaxHealth (double maxHealth) {
+		setProperty ("maxHealth", String.valueOf (maxHealth));
 	}
 }
