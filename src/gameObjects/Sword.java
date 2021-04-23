@@ -17,6 +17,7 @@ public class Sword extends GameObject implements DamageSource {
 		this.createHitbox (0, 0, 20, 20);
 		this.declare (-32, -32);
 		this.getAnimationHandler ().setAnimationSpeed (0);
+		this.setPersistent (true);
 	}
 	public boolean isCollidingRaster (Hitbox hitbox) {
 		if (this.getSprite () != null) {

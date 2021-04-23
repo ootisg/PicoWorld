@@ -17,6 +17,7 @@ public class Particle extends GameObject {
 	public double vx;
 	public double vy;
 	public double speed;
+	public double friction;
 	public Particle (double x, double y, Color color, int size, double durability) {
 		this.declare (x, y);
 		this.color = color;
@@ -25,6 +26,7 @@ public class Particle extends GameObject {
 		this.initialDurability = durability;
 		this.direction = 0;
 		this.speed = 0;
+		this.friction = 0;
 		computeVectors ();
 	}
 	public Particle (double x, double y, Color color, int size, double durability, double direction, double speed) {
@@ -57,6 +59,13 @@ public class Particle extends GameObject {
 			this.setX (this.getX () + vx);
 			this.setY (this.getY () - vy);
 		}
+		if (friction != 0 && speed != 0) {
+			speed -= friction;
+			if (speed < 0) {
+				speed = 0;
+			}
+			computeVectors ();
+		}
 	}
 	@Override
 	public void draw () {
@@ -72,5 +81,8 @@ public class Particle extends GameObject {
 	public void computeVectors () {
 		vx = speed * Math.cos (direction);
 		vy = speed * Math.sin (direction);
+	}
+	public void setFriction (double friction) {
+		this.friction = friction;
 	}
 }
