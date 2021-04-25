@@ -2,19 +2,21 @@ package farming;
 
 import java.awt.Color;
 
+import gameObjects.ItemDrop;
 import gameObjects.Particle;
 import gameObjects.Sword;
+import items.Wheat;
 import main.GameObject;
 import main.MainLoop;
 import resources.Sprite;
 import visualEffects.ParticleMaker;
 
-public class Wheat extends GameObject {
+public class WheatCrop extends GameObject {
 
 	public static Sprite wheatSprite = new Sprite ("resources/sprites/crops/Wheat.png");
 	public static ParticleMaker wheatParticleMaker = null;
 	
-	public Wheat () {
+	public WheatCrop () {
 		setSprite (wheatSprite);
 		createHitbox (0, 0, 16, 16);
 		if (wheatParticleMaker == null) {
@@ -47,6 +49,7 @@ public class Wheat extends GameObject {
 				Particle p = wheatParticleMaker.makeParticle ((int)px, (int)py);
 				p.setFriction (.5);
 			}
+			new ItemDrop (new Wheat ()).declare (getX (), getY ());
 			forget ();
 		}
 	}
