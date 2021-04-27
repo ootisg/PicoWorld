@@ -162,7 +162,9 @@ public class Sprite implements Resource {
 		if (paths != null) {
 			imageArray = new BufferedImage[paths.length];
 			for (int i = 0; i < paths.length; i++) {
-				imageArray [i] = ImageIO.read (new File (paths [i]));
+				BufferedImage img = ImageIO.read (new File (paths [i]));
+				imageArray [i] = new BufferedImage (img.getWidth (), img.getHeight (), BufferedImage.TYPE_4BYTE_ABGR);
+				imageArray [i].getGraphics ().drawImage (img, 0, 0, null); //Convert the loaded image to 4BYTE AGBR
 			}
 			width = imageArray [0].getWidth ();
 			height = imageArray [0].getHeight ();

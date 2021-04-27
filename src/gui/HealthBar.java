@@ -7,6 +7,7 @@ public class HealthBar extends GuiBar {
 	public HealthBar () {
 		super (makeHealthBarColorMap ());
 		setPersistent (true);
+		setPriority (-420);
 	}
 	
 	private static ColorMap makeHealthBarColorMap () {

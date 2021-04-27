@@ -18,6 +18,7 @@ public abstract class GuiBar extends GameObject {
 	protected GuiBar (ColorMap colors) {
 		this.colors = colors;
 		setSprite (barOutline);
+		setPriority (-420);
 	}
 	
 	public double getFillAmt () {

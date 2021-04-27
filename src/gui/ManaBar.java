@@ -7,6 +7,7 @@ public class ManaBar extends GuiBar {
 	public ManaBar () {
 		super (makeManaBarColorMap ());
 		setPersistent (true);
+		setPriority (-420);
 	}
 	
 	private static ColorMap makeManaBarColorMap () {

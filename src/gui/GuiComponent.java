@@ -12,7 +12,7 @@ public abstract class GuiComponent extends GameObject {
 	private TextInterface textInterface;
 	protected GuiComponent () {
 		this (null);
-		setPriority (-3);
+		setPriority (-421);
 	}
 	protected GuiComponent (Sprite background) {
 		if (background != null) {

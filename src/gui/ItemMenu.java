@@ -48,6 +48,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		//Declare the menu
 		super (null);
 		declare (x, y);
+		setPriority (-421);
 		
 		//Read the params file
 		JSONObject params = null;
@@ -88,7 +89,6 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		itemHealth = new Sprite (new Spritesheet ("resources/sprites/itemhealth.png"), 16, 1);
 		selectIndex = 4;
 		pageIndex = 0;
-		setPriority (-2);
 		statWindow = new MappedUi (new Spritesheet ("resources/sprites/gui_background.png"), new int[0][0]);
 		statWindow.setX (x + 120);
 		statWindow.setY (y + 8);

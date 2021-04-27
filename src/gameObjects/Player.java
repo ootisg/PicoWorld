@@ -333,6 +333,9 @@ public class Player extends GameObject implements Damageable {
 		if (getRoom ().isColliding (getHitbox ()) || isColliding ("gameObjects.Tree") || isColliding ("gameObjects.BerryBush") || isColliding ("gameObjects.InfusionAltar")) {
 			return true;
 		}
+		if (isColliding ("gameObjects.Windmill")) {
+			return true;
+		}
 		return false;
 	}
 	public void focusView () {

@@ -68,7 +68,7 @@ public class InteractBubble extends GameObject {
 		//Interact with objects
 		for (int i = 0; i < interactables.size (); i++) {
 			Interactable curr = (Interactable)interactables.get (i);
-			if (interactables.get (i).isColliding (this) && this.getDistance (interactables.get (i)) < radius) {
+			if (interactables.get (i).isColliding (this) && (interactables.get (i)).getDistance (this) < radius) {
 				if (((GameObject)curr).getHitbox ().contains (worldMouseX, worldMouseY)) {
 					if (hoveredObj != curr) {
 						hoveredObj = (GameObject)curr;
