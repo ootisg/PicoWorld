@@ -49,7 +49,9 @@ public class WheatCrop extends GameObject {
 				Particle p = wheatParticleMaker.makeParticle ((int)px, (int)py);
 				p.setFriction (.5);
 			}
-			new ItemDrop (new Wheat ()).declare (getX (), getY ());
+			if (Math.random () < .2) {
+				new ItemDrop (new Wheat ()).declare (getX (), getY ());
+			}
 			forget ();
 		}
 	}
