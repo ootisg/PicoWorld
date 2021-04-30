@@ -5,3 +5,4 @@ name=type
 name=transitionId
 name=xoffset
 name=yoffset
+name=layer
