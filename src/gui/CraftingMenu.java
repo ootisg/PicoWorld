@@ -60,6 +60,11 @@ public class CraftingMenu extends MappedUi {
 		recipe.addIngredient (new MythrilBar ());
 		recipes.add (recipe);
 		
+		recipe = new CraftingRecipe (new Apple ());
+		recipe.addIngredient (new Wheat ());
+		recipe.addIngredient (new Wheat ());
+		recipes.add (recipe);
+		
 		GameItem working = new Potion ();
 		working.setProperty ("type", "health");
 		recipe = new CraftingRecipe (working);
