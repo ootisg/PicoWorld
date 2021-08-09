@@ -6,7 +6,7 @@ import main.GameObject;
 import util.Vector2D;
 
 public abstract class Projectile extends GameObject implements DamageSource {
-	private double velocityX = 1;
+	private double velocityX = 0;
 	private double velocityY = 0;
 	
 	private double direction;

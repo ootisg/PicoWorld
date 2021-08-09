@@ -431,4 +431,19 @@ public class Player extends GameObject implements Damageable {
 	public int getDirection () {
 		return direction;
 	}
+	
+	public Vector2D getFacingDirection () {
+		switch (direction) {
+			case DIRECTION_UP:
+				return new Vector2D (0, -1);
+			case DIRECTION_LEFT:
+				return new Vector2D (-1, 0);
+			case DIRECTION_DOWN:
+				return new Vector2D (0, 1);
+			case DIRECTION_RIGHT:
+				return new Vector2D (1, 0);
+			default:
+				return new Vector2D (0, 0);
+		}
+	}
 }

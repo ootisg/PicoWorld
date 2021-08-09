@@ -7,6 +7,7 @@ import java.util.HashMap;
 import items.Apple;
 import items.Berry;
 import items.Bottle;
+import items.DarkFlameSpell;
 import items.GameItem;
 import items.GameItem.ItemType;
 import items.GoldBar;
@@ -100,6 +101,7 @@ public class ItemMenu extends GuiComponent implements ItemContainer {
 		addItem (new GoldSword ());
 		addItem (new MagicRingSpell ());
 		addItem (new HomingRingSpell ());
+		addItem (new DarkFlameSpell ());
 		
 		addItem (new WoodPlanks ());
 		addItem (new WoodPlanks ());
