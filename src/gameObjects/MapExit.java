@@ -52,6 +52,7 @@ public class MapExit extends GameObject {
 						//Move the player to the correct entrance
 						getPlayer ().setX (workingEntrance.getX () + offsetX);
 						getPlayer ().setY (workingEntrance.getY () + offsetY);
+						getPlayer ().setVariantAttribute ("layer", workingEntrance.getVariantAttribute ("layer"));
 						getPlayer ().focusView ();
 					}
 				}

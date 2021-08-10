@@ -21,13 +21,15 @@ public class Overpass extends GameObject {
 	
 	private BufferedImage overlay;
 	private boolean[][] collisionMap;
+	private short[][] collisionLayer;
+	private boolean hasCollision;
 	
 	private float opacity = MAX_OPACITY;
 	private boolean redraw = true;
 	
 	public Overpass () {
 		super ();
-		this.setPriority (-1);
+		setPriority (1);
 	}
 	
 	@Override
@@ -79,6 +81,7 @@ public class Overpass extends GameObject {
 		int rheight = bry - tly;
 		tlOverpass.createHitbox (0, 0, rwidth * 16, rheight * 16);
 		tlOverpass.collisionMap = new boolean [rheight][rwidth];
+		tlOverpass.collisionLayer = new short [rheight][rwidth];
 		tlOverpass.overlay = new BufferedImage (rwidth * 16, rheight * 16, BufferedImage.TYPE_4BYTE_ABGR);
 		Graphics g = tlOverpass.overlay.getGraphics ();
 		
@@ -92,10 +95,12 @@ public class Overpass extends GameObject {
 				} else {
 					tlOverpass.collisionMap [wy][wx] = false;
 				}
-				getRoom ().setTile (0, tlx + wx, tly + wy, getRoom ().getTileId (tlx + wx, tly + wy, 1)); //Copy layer 1 to layer 0
 				getRoom ().setTile (0, tlx + wx, tly + wy, (short)0); //Remove layer 1
+				tlOverpass.collisionLayer [wy][wx] = getRoom ().getTileId (tlx + wx, tly + wy, 1); //Copy layer 1 to the "collision layer"
 			}
 		}
+		tlOverpass.hasCollision = false;
+		
 	}
 	
 	@Override
@@ -107,9 +112,45 @@ public class Overpass extends GameObject {
 	@Override
 	public void frameEvent () {
 		
+		//Find the layers
+		int playerLayer = Integer.parseInt (getPlayer ().getVariantAttribute ("layer"));
+		int overpassLayer = Integer.parseInt (this.getVariantAttribute ("layer"));
+		
+		//Update collision as needed
+		if (collisionLayer != null) {
+			
+			//Update map tile layers
+			if (!hasCollision && playerLayer < overpassLayer) {
+				//Copy collision layer to layer 0, clear layer 1
+				int tlx = (int)(getX () / 16);
+				int tly = (int)(getY () / 16);
+				for (int wy = 0; wy < collisionLayer.length; wy++) {
+					for (int wx = 0; wx < collisionLayer [0].length; wx++) {
+						getRoom ().setTile (0, tlx + wx, tly + wy, collisionLayer [wy][wx]);
+						getRoom ().setTile (1, tlx + wx, tly + wy, (short)0);
+					}
+				}
+				hasCollision = true;
+				setPriority (-1);
+			} else if (hasCollision && playerLayer >= overpassLayer) {
+				//Copy collision layer to layer 1, clear layer 0
+				int tlx = (int)(getX () / 16);
+				int tly = (int)(getY () / 16);
+				for (int wy = 0; wy < collisionLayer.length; wy++) {
+					for (int wx = 0; wx < collisionLayer [0].length; wx++) {
+						getRoom ().setTile (0, tlx + wx, tly + wy, collisionLayer [wy][wx]);
+						getRoom ().setTile (1, tlx + wx, tly + wy, (short)0);
+					}
+				}
+				hasCollision = false;
+				setPriority (50);
+			}
+			
+		}
+		
 		//Change the opacity if the player is under the overpass
 		double prevOpacity = opacity;
-		if (isCollidingWithTiles (getPlayer ())) {
+		if (playerLayer < overpassLayer && isCollidingWithTiles (getPlayer ())) {
 			opacity -= STEP_OPACITY;
 		} else {
 			opacity += STEP_OPACITY;

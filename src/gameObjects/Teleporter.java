@@ -68,6 +68,7 @@ public class Teleporter extends GameObject {
 							//Teleport the player
 							getPlayer ().setX (workingTeleporter.getX ());
 							getPlayer ().setY (workingTeleporter.getY ());
+							getPlayer ().setVariantAttribute ("layer", workingTeleporter.getVariantAttribute ("layer"));
 						}
 					} else {
 						if (workingTeleporter.selected || workingTeleporter.getSprite () == tpsprite) {

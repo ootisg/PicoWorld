@@ -84,6 +84,7 @@ public class Player extends GameObject implements Damageable {
 		this.manaBar = new StatusBar (new Sprite (new Spritesheet ("resources/sprites/manabar.png"), 16, 1));
 		this.healthBar2 = new HealthBar ();
 		this.manaBar2 = new ManaBar ();
+		this.setVariantAttribute ("layer", "0");
 		healthBar2.declare (0, 0);
 		manaBar2.declare (0, 16);
 		statusBars = new LinkedList<StatusBar> ();
