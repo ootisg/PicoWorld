@@ -214,4 +214,8 @@ public class Overpass extends GameObject {
 		
 	}
 	
+	public boolean isUnderPlayer () {
+		return !hasCollision;
+	}
+	
 }

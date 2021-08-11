@@ -334,6 +334,14 @@ public class Player extends GameObject implements Damageable {
 		if (getRoom ().isColliding (getHitbox ()) || isColliding ("gameObjects.Tree") || isColliding ("gameObjects.BerryBush") || isColliding ("gameObjects.InfusionAltar")) {
 			return true;
 		}
+		if (isColliding ("gameObjects.OverpassBarrier")) {
+			ArrayList<GameObject> overpasses = this.getCollidingObjects ("gameObjects.Overpass");
+			for (int i = 0; i < overpasses.size (); i++) {
+				if (((Overpass)overpasses.get (i)).isUnderPlayer ()) {
+					return true;
+				}
+			}
+		}
 		if (isColliding ("gameObjects.Windmill")) {
 			return true;
 		}

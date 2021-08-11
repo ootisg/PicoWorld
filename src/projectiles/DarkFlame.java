@@ -44,7 +44,7 @@ public class DarkFlame extends PlayerProjectile {
 	
 	@Override
 	public double getBaseDamage() {
-		return 10;
+		return 25;
 	}
 
 }
