@@ -14,7 +14,7 @@
 				},
 				"text": {
 					"type":"TypedTextGenerator",
-					"revealText":"Daedradic Rift",
+					"revealText":"Thaumic Rift",
 					"revealTime":100
 				},
 				"xPos":150,
@@ -24,7 +24,7 @@
 		{
 			"id":"text1",
 			"type":"TextEvent",
-			"duration":10000,
+			"duration":20000,
 			"params": {
 				"font": {
 					"name":"Courier",
@@ -32,9 +32,13 @@
 					"color":"000000",
 					"style":"bold"
 				},
-				"text":"Daedradic Rift",
+				"text":"Thaumic Rift",
 				"xPos":150,
 				"yPos":32
+			},
+			"endTrigger": {
+				"eventId":"text3",
+				"type":"end"
 			}
 		},
 		{
@@ -64,7 +68,7 @@
 		{
 			"id":"text2",
 			"type":"TextEvent",
-			"duration":10000,
+			"duration":20000,
 			"params": {
 				"font": {
 					"name":"Courier",
@@ -75,6 +79,10 @@
 				"text":"Status: ",
 				"xPos":150,
 				"yPos":64
+			},
+			"endTrigger": {
+				"eventId":"text3",
+				"type":"end"
 			}
 		},
 		{
