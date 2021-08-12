@@ -1,11 +1,12 @@
 package puzzle;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import gameObjects.Enemy;
 import gameObjects.Saveable;
 import items.GameItem;
-import items.ItemDrop;
 import main.GameObject;
 import main.MainLoop;
 
@@ -14,7 +15,6 @@ public class Puzzle extends Saveable {
 	private boolean isNew;
 	
 	private String type;
-	private GameItem reward;
 	private ArrayList<GameObject> components;
 	private Comparator<? super GameObject> renderComparator;
 	
@@ -29,12 +29,6 @@ public class Puzzle extends Saveable {
 		if (isNew) {
 			//Set variables relating to attributes given in the map editor
 			type = getVariantAttribute ("type");
-			try {
-				reward = (GameItem)(Class.forName (getVariantAttribute ("reward")).newInstance ());
-			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			String puzzleId = this.getVariantAttribute ("id");
 			ArrayList<GameObject> loadedComponents = MainLoop.getObjectMatrix ().getAll (PuzzleComponent.class);
 			//Link puzzle components
@@ -55,6 +49,13 @@ public class Puzzle extends Saveable {
 			//Ensure the above code doesn't run twice
 			load ();
 			isNew = false;
+		}
+		//Hacky solution for now
+		if (getVariantAttribute ("type").equals ("Enemy")) {
+			ArrayList<GameObject> enemies = MainLoop.getObjectMatrix ().getAll (Enemy.class);
+			if (enemies.size () == 0) {
+				doWin ();
+			}
 		}
 	}
 	
@@ -79,7 +80,9 @@ public class Puzzle extends Saveable {
 	}
 	
 	public void doWin () {
-		new ItemDrop (reward).declare (getX (), getY ());
+		for (int i = 0; i < components.size (); i++) {
+			((PuzzleComponent)components.get (i)).onSolve ();
+		}
 		save ("solved");
 		forget ();
 	}

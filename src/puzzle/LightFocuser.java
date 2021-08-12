@@ -105,4 +105,10 @@ public class LightFocuser extends PuzzleComponent {
 			}
 		}
 	}
+
+	@Override
+	public void onSolve() {
+		// TODO Auto-generated method stub
+		
+	}
 }

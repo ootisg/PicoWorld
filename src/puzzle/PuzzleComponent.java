@@ -15,4 +15,6 @@ public abstract class PuzzleComponent extends GameObject {
 		return puzzle;
 	}
 	
+	public abstract void onSolve ();
+	
 }

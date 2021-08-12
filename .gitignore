@@ -2,3 +2,6 @@ Picoworld/*
 bin/*
 build/*
 design_notes/*
+/bin/
+*.jar
+*.bat

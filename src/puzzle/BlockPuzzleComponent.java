@@ -1,6 +1,6 @@
 package puzzle;
 
-public class BlockPuzzleComponent extends PuzzleComponent {
+public abstract class BlockPuzzleComponent extends PuzzleComponent {
 	
 	protected int velocityX;
 	protected int velocityY;

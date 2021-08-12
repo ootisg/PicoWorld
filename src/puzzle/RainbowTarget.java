@@ -49,4 +49,10 @@ public class RainbowTarget extends BlockPuzzleComponent {
 		getAnimationHandler ().setFrame (getColorId ());
 		super.draw ();
 	}
+
+	@Override
+	public void onSolve() {
+		// TODO Auto-generated method stub
+		
+	}
 }

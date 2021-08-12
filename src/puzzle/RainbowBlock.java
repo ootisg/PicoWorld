@@ -166,4 +166,10 @@ public class RainbowBlock extends BlockPuzzleComponent implements Interactable {
 	public boolean isLinkedTo (RainbowBlock block) {
 		return block == link;
 	}
+
+	@Override
+	public void onSolve() {
+		// TODO Auto-generated method stub
+		
+	}
 }

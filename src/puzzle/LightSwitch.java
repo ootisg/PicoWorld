@@ -32,4 +32,10 @@ public class LightSwitch extends PuzzleComponent {
 			deactivate ();
 		}
 	}
+
+	@Override
+	public void onSolve() {
+		// TODO Auto-generated method stub
+		
+	}
 }

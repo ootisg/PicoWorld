@@ -1,0 +1,3 @@
+VF 1
+name=puzzleId
+name=rewardType
