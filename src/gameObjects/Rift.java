@@ -1,6 +1,7 @@
 package gameObjects;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 import cutscenes.Callback;
 import cutscenes.Cutscene;
@@ -42,6 +43,15 @@ public class Rift extends GameObject implements Callback {
 	public void loadDestination () {
 		try {
 			getRoom ().loadRoom ("resources/maps/" + getVariantAttribute ("destination"));
+			ArrayList<GameObject> startSpots = MainLoop.getObjectMatrix ().getObjects ("gameObjects.Startpos");
+			System.out.println (startSpots);
+			if (startSpots != null && startSpots.size () != 0) {
+				GameObject start = startSpots.get (0);
+				if (start != null) {
+					getPlayer ().setX (start.getX ());
+					getPlayer ().setY (start.getY ());
+				}
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
