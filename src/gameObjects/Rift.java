@@ -43,7 +43,7 @@ public class Rift extends GameObject implements Callback {
 	public void loadDestination () {
 		try {
 			getRoom ().loadRoom ("resources/maps/" + getVariantAttribute ("destination"));
-			ArrayList<GameObject> startSpots = MainLoop.getObjectMatrix ().getObjects ("gameObjects.Startpos");
+			ArrayList<GameObject> startSpots = MainLoop.getObjectMatrix ().getObjects ("gameObjects.RiftExit");
 			System.out.println (startSpots);
 			if (startSpots != null && startSpots.size () != 0) {
 				GameObject start = startSpots.get (0);
