@@ -12,7 +12,7 @@ public class FlashOverlay extends ColorOverlay {
 	private long creationTime;
 	
 	public FlashOverlay (Color startColor, Color endColor, int startLength, int peakLength, int endLength) {
-		super (startColor);
+		super ();
 		this.startColor = startColor;
 		this.endColor = endColor;
 		this.fg = new FlashGenerator (startLength, peakLength, endLength);

@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import gui.Interactable;
 import items.GameItem;
-import items.ItemDrop;
 import main.GameObject;
 import resources.Sprite;
 

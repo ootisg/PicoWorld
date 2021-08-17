@@ -2,13 +2,12 @@ package puzzle;
 
 import java.util.ArrayList;
 
-import gameObjects.Interactable;
 import gameObjects.Player;
 import main.GameObject;
 import resources.Sprite;
 import resources.Spritesheet;
 
-public class RainbowBlock extends BlockPuzzleComponent implements Interactable {
+public class RainbowBlock extends BlockPuzzleComponent {
 	
 	private RainbowBlock link;
 	
