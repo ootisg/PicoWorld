@@ -342,6 +342,15 @@ public class Player extends GameObject implements Damageable {
 				}
 			}
 		}
+		if (isColliding ("gameObjects.LayerCollider")) {
+			ArrayList<GameObject> layerColliders = this.getCollidingObjects ("gameObjects.LayerCollider");
+			int playerLayer = Integer.parseInt (getVariantAttribute ("layer"));
+			for (int i = 0; i < layerColliders.size (); i++) {
+				if (playerLayer == ((LayerCollider)layerColliders.get (i)).getLayer ()) {
+					return true;
+				}
+			}
+		}
 		if (isColliding ("gameObjects.Windmill")) {
 			return true;
 		}
